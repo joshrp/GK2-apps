@@ -11,10 +11,13 @@ Development here is **guided, not hands-free**.
   together or make design decisions on your own.
 - If something looks off (failing checks, unexpected output, a choice the request doesn't
   settle, scope creep), stop and ask rather than working around it.
-- Work directly on `main`. Don't create branches or worktrees unless asked (rare exceptions).
+- Work happens on a branch, never directly on `main`. Before starting a piece of work, check
+  which branch you're on; if it's `main`, ask which branch to use (or propose a name) before
+  making changes. Branch from an up-to-date `main`. No worktrees unless asked.
 - One train of work at a time: no parallel tasks, side sessions or background subagents
   running alongside the main thread.
-- Don't commit or push unless asked. Pushing to `main` deploys to GitHub Pages.
+- Don't commit, push, merge into `main` or open a PR unless asked. Pushing to `main` deploys to
+  GitHub Pages.
 
 ## Dev server
 

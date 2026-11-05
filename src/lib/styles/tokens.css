@@ -1,0 +1,48 @@
+:root {
+	color-scheme: dark;
+
+	--color-bg: #16140f;
+	--color-panel: #1f1c17;
+	--color-field: #2a2620;
+	--color-line: #36322a;
+	--color-text: #ffffff;
+	--color-accent: #d9a54a;
+
+	--space-1: 4px;
+	--space-2: 8px;
+	--space-3: 12px;
+	--space-4: 16px;
+
+	--radius: 6px;
+
+	--font-size-sm: 12px;
+	--font-size-md: 13px;
+	--font-size-lg: 14px;
+	--font-sans: system-ui, sans-serif;
+
+	--panel-width: 450px;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	background: var(--color-bg);
+	color: var(--color-text);
+	font-family: var(--font-sans);
+	font-size: var(--font-size-md);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-weight: 500;
+}

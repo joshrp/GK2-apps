@@ -34,10 +34,17 @@ Decisions for the Settings panel "perk levels" slice, agreed 2026-11-05. Read al
      the row, headed "<Perk> affects N recipes", with every name in two columns. It closes with
      its × button, Esc, a click elsewhere, or the "+N more" button again. Lists of three or fewer
      are shown in full with no button.
-- Non-zero perks get no visual cue. There is a Reset button that sets all perks to 0.
+- Non-zero perks get no visual cue. There is a Reset button that sets all perks to 0, after a
+  confirm ("Reset all perk levels to 0?").
 - Footnote under the rows: "Only your character's perk levels are used. Update the app when
   zombie or worker levels need to be included."
-- Levels are saved in browser storage. A brief flash of zeros on load is accepted.
+- Levels are saved in browser storage on every change. A brief flash of zeros on load is
+  accepted.
+- Saved levels that can't be used (bad values, perks no longer listed, unreadable data) are
+  cleaned up and named in a warning under the heading, which stays until dismissed with ×. A
+  warning also shows when the browser blocks storage. Details in
+  [perk_settings_step_3.md](perk_settings_step_3.md).
+- The levels live in a shared runes module, so the calculator can read them later.
 
 ### Accepted behaviour
 - One recipe can appear under two perks (e.g. Bread under Cook and Heat Saver).

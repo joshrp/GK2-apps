@@ -28,8 +28,12 @@ Decisions for the Settings panel "perk levels" slice, agreed 2026-11-05. Read al
   1. perk name
   2. level: a number input starting at 0, whole numbers, min 0, no max, native up/down arrows
      with a 2px gap before them
-  3. Affects: the recipes the perk changes. Long lists are truncated ("A, B, C +19"), with the
-     full list on hover. Names are de-duplicated (quality tiers share a name, e.g. Cabbage soup).
+  3. Affects: the recipes the perk changes. Names are de-duplicated (quality tiers share a name,
+     e.g. Cabbage soup). Lists longer than three show the first three and a "+N more" button
+     (agreed 2026-11-05, replacing "full list on hover"). The button opens a small popover under
+     the row, headed "<Perk> affects N recipes", with every name in two columns. It closes with
+     its × button, Esc, a click elsewhere, or the "+N more" button again. Lists of three or fewer
+     are shown in full with no button.
 - Non-zero perks get no visual cue. There is a Reset button that sets all perks to 0.
 - Footnote under the rows: "Only your character's perk levels are used. Update the app when
   zombie or worker levels need to be included."
@@ -40,8 +44,9 @@ Decisions for the Settings panel "perk levels" slice, agreed 2026-11-05. Read al
 - Recipes flagged `likelyDev` are hidden. If a real recipe is missing, it will be flagged on an
   updated build.
 - Conveyor crafts are left out of the Affects lists, in line with "Use conveyor recipes: off".
-  Of the 19 perks, this affects only Miller (Supply: Flour Sack) and Tailor (Fabric,
-  Supply: Fabric, Supply: Clothes I/II). No perk loses all its recipes.
+  Of the 19 perks, this affects only Miller (Supply: Flour Sack) and Tailor (the conveyor
+  Fabric, Supply: Fabric, Supply: Clothes I/II). Tailor keeps the Weaving Loom Fabric, a separate
+  craft with the same name. No perk loses all its recipes.
 
 ## Review when zombies, workers or conveyors are added
 
@@ -63,3 +68,6 @@ with zombies, workers or conveyors:
 - **The 2px gap** between the number and the arrows. Chrome may not honour it, so review it in
   the built app.
 - **Two perks on one recipe** (Bread etc.): refine the display if it's confusing.
+- **"Improve newspaper I/II"** are listed under Paper maker (their guaranteed output uses the
+  perk). Not yet seen in the game, so it's unknown whether they're craftable items or upgrades.
+  Printing Press and Newspaper are confirmed craftable.

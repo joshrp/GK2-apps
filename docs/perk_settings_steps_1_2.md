@@ -30,7 +30,7 @@ first, in order:
 
 ## Out of scope for steps 1 and 2
 
-- The perk rows, the number inputs, Reset, the footnote, and the Affects truncation with hover.
+- The perk rows, the number inputs, Reset, the footnote, and the Affects "+N more" popover.
   These are steps 4 and 5.
 - Saving levels to browser storage. That's step 3.
 - Evaluating formulas, the calculator itself, targets, inventory, conveyor settings and the
@@ -300,6 +300,7 @@ returned, because it may be a rule mistake or a data surprise, and the user deci
    `localStorage` under a versioned key, plus Reset. Tests included.
 4. Panel on screen: three-column rows (name, number input starting at 0 with native arrows and a
    2px gap, Affects).
-5. Finishing touches: Affects shortened as "A, B, C +N" with the full list on hover, and the
+5. Finishing touches: Affects shortened to the first three names and a "+N more" button that
+   opens the full list in a popover (see the notes' "Layout and UX"), and the
    footnote: "Only your character's perk levels are used. Update the app when zombie or worker
    levels need to be included."

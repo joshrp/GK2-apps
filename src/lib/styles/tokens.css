@@ -6,7 +6,9 @@
 	--color-field: #2a2620;
 	--color-line: #36322a;
 	--color-text: #ffffff;
-	--color-accent: #d9a54a;
+	--color-focus: #32a852;
+	--color-warning: #d9a54a;
+	--color-error: #e05252;
 
 	--space-1: 4px;
 	--space-2: 8px;

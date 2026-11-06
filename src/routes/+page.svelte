@@ -1,6 +1,10 @@
+<script lang="ts">
+import PerkPanel from '#lib/perks/PerkPanel.svelte';
+</script>
+
 <div class="shell">
 	<aside class="panel" aria-label="Settings">
-		<h2>Perk levels</h2>
+		<PerkPanel />
 	</aside>
 	<main class="main">
 		<h2>Targets</h2>

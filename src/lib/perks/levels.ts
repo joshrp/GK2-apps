@@ -18,6 +18,12 @@ export function isValidLevel(value: unknown): value is number {
 	return Number.isInteger(value) && (value as number) >= 0;
 }
 
+/** A level typed into an input: digits only (spaces around allowed), else null. */
+export function parseLevelInput(text: string): number | null {
+	const trimmed = text.trim();
+	return /^\d+$/.test(trimmed) ? Number(trimmed) : null;
+}
+
 /** Every perk at level 0. */
 export function zeroLevels(perkIds: string[]): PerkLevels {
 	return Object.fromEntries(perkIds.map((id) => [id, 0]));

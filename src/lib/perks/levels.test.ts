@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	isValidLevel,
 	type LevelProblem,
+	parseLevelInput,
 	parseLevels,
 	serializeLevels,
 	warningMessages
@@ -18,6 +19,20 @@ describe('isValidLevel', () => {
 	it('rejects everything else', () => {
 		for (const v of [-1, 1.5, '2', null, Number.NaN, Number.POSITIVE_INFINITY]) {
 			expect(isValidLevel(v), String(v)).toBe(false);
+		}
+	});
+});
+
+describe('parseLevelInput', () => {
+	it('reads digits, allowing surrounding spaces', () => {
+		expect(parseLevelInput('0')).toBe(0);
+		expect(parseLevelInput('7')).toBe(7);
+		expect(parseLevelInput(' 12 ')).toBe(12);
+	});
+
+	it('rejects anything else', () => {
+		for (const text of ['', ' ', '-1', '2.5', '1e3', 'abc']) {
+			expect(parseLevelInput(text), JSON.stringify(text)).toBeNull();
 		}
 	});
 });

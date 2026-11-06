@@ -23,6 +23,8 @@ Decisions for the Settings panel "perk levels" slice, agreed 2026-11-05. Read al
 ### Layout and UX
 - Dark theme only, whatever the OS setting. All text is white (`#ffffff`). Styling will be
   revisited after the app has been in use.
+- Colours with a job (agreed 2026-11-06, replacing the single amber accent): focus border
+  `#32a852` green, warnings `#d9a54a` amber, invalid input `#e05252` red.
 - The panel sits on the left, with targets and output to its right.
 - One row per perk, three columns:
   1. perk name
@@ -34,8 +36,13 @@ Decisions for the Settings panel "perk levels" slice, agreed 2026-11-05. Read al
      the row, headed "<Perk> affects N recipes", with every name in two columns. It closes with
      its × button, Esc, a click elsewhere, or the "+N more" button again. Lists of three or fewer
      are shown in full with no button.
-- Non-zero perks get no visual cue. There is a Reset button that sets all perks to 0, after a
-  confirm ("Reset all perk levels to 0?").
+- An invalid level (empty, negative, decimal) gets a red border and "Enter a whole number, 0 or
+  more." under the row. It isn't saved, and stays as typed until fixed.
+- Non-zero perks get no visual cue. There is a Reset button under the rows that sets all perks
+  to 0, after an inline confirm: the button is replaced by "Reset all perk levels to 0?" with
+  Reset and Cancel buttons (Esc cancels). Not the browser's `confirm()`, which the built-in
+  browser pane blocks and Chrome lets users switch off (found 2026-11-06).
+- Until step 5, the Affects column shows the full list, wrapping.
 - Footnote under the rows: "Only your character's perk levels are used. Update the app when
   zombie or worker levels need to be included."
 - Levels are saved in browser storage on every change. A brief flash of zeros on load is

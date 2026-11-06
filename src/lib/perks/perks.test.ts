@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { type Craft, type Gk2Data, gk2Data, type ItemOutput, type Quantity } from '#lib/data/gk2';
-import { formulaParams, listPerks } from './perks';
+import { formulaParams, listPerks, previewAffects } from './perks';
 
 function craft(id: string, overrides: Partial<Craft> = {}): Craft {
 	return {
@@ -169,6 +169,21 @@ describe('listPerks', () => {
 			{ z: 'Apple', y: 'Banana' }
 		);
 		expect(listPerks(d).map((p) => p.name)).toEqual(['Apple', 'Banana']);
+	});
+});
+
+describe('previewAffects', () => {
+	const names = (n: number) => Array.from({ length: n }, (_, i) => `R${i + 1}`);
+
+	it('shows lists of up to 4 in full', () => {
+		for (const n of [0, 1, 4]) {
+			expect(previewAffects(names(n)), String(n)).toEqual({ shown: names(n), hidden: 0 });
+		}
+	});
+
+	it('shows the first 3 of longer lists, in order', () => {
+		expect(previewAffects(names(5))).toEqual({ shown: ['R1', 'R2', 'R3'], hidden: 2 });
+		expect(previewAffects(names(27))).toEqual({ shown: ['R1', 'R2', 'R3'], hidden: 24 });
 	});
 });
 

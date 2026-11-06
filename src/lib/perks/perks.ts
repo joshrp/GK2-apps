@@ -28,6 +28,12 @@ function readQuantities(craft: Craft): (Quantity | null)[] {
 	return [...outputs, ...craft.inputs.map((i) => i.count)];
 }
 
+/** Names shown before the "+N more" button, and how many it hides. Up to 4 show in full. */
+export function previewAffects(affects: string[]): { shown: string[]; hidden: number } {
+	if (affects.length <= 4) return { shown: affects, hidden: 0 };
+	return { shown: affects.slice(0, 3), hidden: affects.length - 3 };
+}
+
 /** Perks that change the calculator's results, sorted by name. */
 export function listPerks(data: Gk2Data): PerkDef[] {
 	const affects = new Map<string, Set<string>>();

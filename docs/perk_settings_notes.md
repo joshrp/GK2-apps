@@ -31,20 +31,20 @@ Decisions for the Settings panel "perk levels" slice, agreed 2026-11-05. Read al
   2. level: a number input starting at 0, whole numbers, min 0, no max, native up/down arrows
      with a 2px gap before them
   3. Affects: the recipes the perk changes. Names are de-duplicated (quality tiers share a name,
-     e.g. Cabbage soup). Lists longer than three show the first three and a "+N more" button
-     (agreed 2026-11-05, replacing "full list on hover"). The button opens a small popover under
-     the row, headed "<Perk> affects N recipes", with every name in two columns. It closes with
-     its × button, Esc, a click elsewhere, or the "+N more" button again. Lists of three or fewer
-     are shown in full with no button.
+     e.g. Cabbage soup). Lists of five or more show the first three and a "+N more" button
+     (agreed 2026-11-05, replacing "full list on hover"; on 2026-11-06 lists of four were made to
+     show in full, so there's never a "+1 more"). The button opens a small popover under the
+     row, floating over the rows below, headed "<Perk> affects N recipes", with every name in two
+     columns. It closes with its × button, Esc, a click elsewhere, or the "+N more" button again.
+     Lists of four or fewer are shown in full with no button.
 - An invalid level (empty, negative, decimal) gets a red border and "Enter a whole number, 0 or
   more." under the row. It isn't saved, and stays as typed until fixed.
 - Non-zero perks get no visual cue. There is a Reset button under the rows that sets all perks
   to 0, after an inline confirm: the button is replaced by "Reset all perk levels to 0?" with
   Reset and Cancel buttons (Esc cancels). Not the browser's `confirm()`, which the built-in
   browser pane blocks and Chrome lets users switch off (found 2026-11-06).
-- Until step 5, the Affects column shows the full list, wrapping.
-- Footnote under the rows: "Only your character's perk levels are used. Update the app when
-  zombie or worker levels need to be included."
+- Footnote at the bottom of the panel, under Reset, in small text: "Only your character's perk
+  levels are used. Update the app when zombie or worker levels need to be included."
 - Levels are saved in browser storage on every change. A brief flash of zeros on load is
   accepted.
 - Saved levels that can't be used (bad values, perks no longer listed, unreadable data) are

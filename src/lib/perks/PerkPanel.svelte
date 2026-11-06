@@ -3,9 +3,34 @@ import { onMount } from 'svelte';
 import { gk2Data } from '#lib/data/gk2';
 import { parseLevelInput } from './levels';
 import { perkLevels } from './perkLevels.svelte';
-import { listPerks } from './perks';
+import { listPerks, previewAffects } from './perks';
 
-const perks = listPerks(gk2Data);
+const perks = listPerks(gk2Data).map((perk) => ({
+	...perk,
+	preview: previewAffects(perk.affects)
+}));
+
+/** Perk whose full Affects popover is open; one at a time. */
+let openAffects: string | null = $state(null);
+
+function toggleAffects(id: string) {
+	openAffects = openAffects === id ? null : id;
+}
+
+/** Closes the popover; Esc and × put focus back on its "+N more" button. */
+function closeAffects(refocus: boolean) {
+	const id = openAffects;
+	openAffects = null;
+	if (refocus && id) document.getElementById(`more-${id}`)?.focus();
+}
+
+function onDocumentClick(e: MouseEvent) {
+	if (openAffects && !(e.target as Element).closest?.('.popover, .more')) closeAffects(false);
+}
+
+function onDocumentKeydown(e: KeyboardEvent) {
+	if (openAffects && e.key === 'Escape') closeAffects(true);
+}
 
 /** Rows whose input holds something that isn't a valid level (not saved). */
 let invalid: Record<string, boolean> = $state({});
@@ -55,6 +80,8 @@ const focusIfReturning = (el: HTMLElement) => {
 };
 </script>
 
+<svelte:document onclick={onDocumentClick} onkeydown={onDocumentKeydown} />
+
 <h2>Perk levels</h2>
 
 {#if perkLevels.warnings.length > 0}
@@ -89,9 +116,35 @@ const focusIfReturning = (el: HTMLElement) => {
 				oninput={(e) => onLevelInput(perk.id, e.currentTarget.value)}
 				{@attach showSavedLevel(perk.id)}
 			/>
-			<span class="affects">{perk.affects.join(', ')}</span>
+			<span class="affects"
+				>{perk.preview.shown.join(', ')}{#if perk.preview.hidden > 0}
+					<button
+						id="more-{perk.id}"
+						class="more"
+						type="button"
+						aria-expanded={openAffects === perk.id}
+						aria-controls="affects-{perk.id}"
+						onclick={() => toggleAffects(perk.id)}>+{perk.preview.hidden} more</button
+					>
+				{/if}</span
+			>
 			{#if invalid[perk.id]}
 				<p class="error" id="level-error-{perk.id}">Enter a whole number, 0 or more.</p>
+			{/if}
+			{#if openAffects === perk.id}
+				<div class="popover" id="affects-{perk.id}" role="dialog" aria-label="{perk.name} affects">
+					<div class="popover-head">
+						<span>{perk.name} affects {perk.affects.length} recipes</span>
+						<button class="dismiss" type="button" aria-label="Close" onclick={() => closeAffects(true)}
+							>×</button
+						>
+					</div>
+					<ul class="popover-list">
+						{#each perk.affects as recipe}
+							<li>{recipe}</li>
+						{/each}
+					</ul>
+				</div>
 			{/if}
 		</li>
 	{/each}
@@ -122,6 +175,11 @@ const focusIfReturning = (el: HTMLElement) => {
 		{@attach focusIfReturning}>Reset</button
 	>
 {/if}
+
+<p class="footnote">
+	Only your character's perk levels are used. Update the app when zombie or worker levels need to
+	be included.
+</p>
 
 <style>
 	h2 {
@@ -183,6 +241,7 @@ const focusIfReturning = (el: HTMLElement) => {
 	}
 
 	.row {
+		position: relative;
 		display: grid;
 		grid-template-columns: 130px 64px minmax(0, 1fr);
 		column-gap: var(--space-3);
@@ -245,7 +304,57 @@ const focusIfReturning = (el: HTMLElement) => {
 	}
 
 	.level:focus,
+	.more {
+		margin-left: var(--space-1);
+		padding: 0 var(--space-2);
+		background: var(--color-field);
+		border: 1px solid var(--color-line);
+		border-radius: var(--radius);
+		color: var(--color-text);
+		font: inherit;
+		font-size: var(--font-size-sm);
+		cursor: pointer;
+	}
+
+	.more[aria-expanded='true'] {
+		border-color: var(--color-text);
+	}
+
+	.popover {
+		position: absolute;
+		top: calc(100% - var(--space-1));
+		left: 0;
+		right: 0;
+		z-index: 1;
+		padding: var(--space-2) var(--space-3);
+		background: var(--color-field);
+		border: 1px solid var(--color-line);
+		border-radius: var(--radius);
+	}
+
+	.popover-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		font-weight: 500;
+	}
+
+	.popover-list {
+		margin: var(--space-2) 0 0;
+		padding: 0;
+		list-style: none;
+		columns: 2;
+		column-gap: var(--space-4);
+		line-height: 1.6;
+	}
+
+	.footnote {
+		margin: var(--space-4) 0 0;
+		font-size: var(--font-size-sm);
+	}
+
 	.button:focus-visible,
+	.more:focus-visible,
 	.dismiss:focus-visible {
 		outline: none;
 		border-color: var(--color-focus);

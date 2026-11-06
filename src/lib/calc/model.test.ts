@@ -1,134 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import {
-	type BuildAction,
-	type Buildable,
-	type Craft,
-	type Gk2Data,
-	gk2Data,
-	type Item,
-	type ItemOutput
-} from '#lib/data/gk2';
+import { gk2Data } from '#lib/data/gk2';
+import { action, buildable, craft, data, item, output } from './fixtures';
 import { buildModel, isUsableCraft } from './model';
 import { STATION_FIXES } from './stationFixes';
-
-function craft(id: string, overrides: Partial<Craft> = {}): Craft {
-	return {
-		id,
-		name: id,
-		nameSource: null,
-		icon: null,
-		likelyDev: false,
-		raw: null,
-		description: null,
-		iconSource: null,
-		iconId: null,
-		stations: [],
-		inputs: [],
-		outputs: [output(id)],
-		duration: null,
-		energyPerTick: null,
-		techPoints: { red: null, green: null, blue: null },
-		perks: [],
-		flags: [],
-		effectsOnEnd: [],
-		unlock: { required: false, sources: [] },
-		...overrides
-	};
-}
-
-function output(id: string, overrides: Partial<ItemOutput> = {}): ItemOutput {
-	return {
-		id,
-		refKind: 'item',
-		count: 1,
-		min: null,
-		max: null,
-		chance: null,
-		outputGroup: null,
-		star: false,
-		...overrides
-	};
-}
-
-function item(id: string, name: string | null = id, overrides: Partial<Item> = {}): Item {
-	const at = id.indexOf(':');
-	return {
-		id,
-		name,
-		nameSource: null,
-		icon: null,
-		likelyDev: false,
-		raw: null,
-		description: null,
-		iconId: null,
-		quality: at === -1 ? null : id.slice(at + 1),
-		groups: [],
-		stackCount: 1,
-		basePrice: 0,
-		type: 0,
-		flags: [],
-		madeBy: [],
-		usedIn: [],
-		...overrides
-	};
-}
-
-function action(id: string, mode: BuildAction['mode'], cost: [string, number][] = []): BuildAction {
-	return {
-		id,
-		mode,
-		name: null,
-		nameSource: null,
-		icon: null,
-		iconId: null,
-		cost: cost.map(([costId, count]) => ({ id: costId, refKind: 'item', count })),
-		outputs: [],
-		builders: [],
-		startCraft: null,
-		limit: null,
-		unlock: { required: false, sources: [] },
-		likelyDev: false,
-		raw: {}
-	};
-}
-
-function buildable(id: string, name: string | null, actions: BuildAction[]): Buildable {
-	return {
-		id,
-		name,
-		nameSource: null,
-		icon: `icon_${id}`,
-		likelyDev: false,
-		raw: null,
-		iconSource: null,
-		actions,
-		zones: [],
-		craftsHere: []
-	};
-}
-
-function data(overrides: Partial<Gk2Data> = {}): Gk2Data {
-	return {
-		schemaVersion: '0.1.0',
-		generatedAt: '',
-		source: {
-			game: 'Graveyard Keeper 2',
-			steamAppId: 0,
-			steamBuildId: 0,
-			unityVersion: '',
-			locale: 'en'
-		},
-		items: [],
-		itemGroups: [],
-		crafts: [],
-		buildables: [],
-		zones: [],
-		techs: [],
-		techTabs: [],
-		names: {},
-		...overrides
-	};
-}
 
 describe('isUsableCraft', () => {
 	it('excludes dev, conveyor and zombie crafts, and crafts with no guaranteed output', () => {
@@ -420,6 +294,14 @@ describe('buildModel (game data)', () => {
 
 	const costOf = (id: string) =>
 		Object.fromEntries((m.buildings.get(id)?.cost ?? []).map((l) => [l.id, l.count]));
+
+	it('finds icons for items, families, groups and stations', () => {
+		expect(m.iconOf('ingot_iron')).toBeTruthy();
+		expect(m.iconOf('story')).toBeTruthy();
+		expect(m.iconOf('gr_skin')).toBeTruthy();
+		expect(m.iconOf('wooden_anvil')).toBe(m.stations.find((s) => s.id === 'wooden_anvil')?.icon);
+		expect(m.iconOf('no_such_thing')).toBeNull();
+	});
 
 	it('uses X_place costs, confirmed in the game', () => {
 		expect(costOf('wooden_anvil')).toEqual({ wood1: 1, '1h_stone': 1 });

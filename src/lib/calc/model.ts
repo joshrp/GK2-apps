@@ -90,6 +90,8 @@ export interface Model {
 	resolve(line: Pick<Line, 'id' | 'refKind'>): Need;
 	/** Display name of an item, family, station, building or other id. */
 	nameOf(id: string): string;
+	/** Icon of an item, family, group (its first member), building or station; null if none. */
+	iconOf(id: string): string | null;
 }
 
 /** Crafts the calculator follows: not dev, conveyor or zombie, with a guaranteed output. */
@@ -220,6 +222,18 @@ export function buildModel(data: Gk2Data): Model {
 		return member?.name ?? id;
 	};
 
+	const iconOf = (id: string): string | null => {
+		const item = items.get(id);
+		if (item) return item.icon;
+		const building = buildings.get(baseBuildingId(id));
+		if (building?.icon) return building.icon;
+		const buildable = buildables.get(id) ?? buildables.get(`${id}_place`);
+		if (buildable?.icon) return buildable.icon;
+		const groupMember = groups.get(id)?.members[0];
+		if (groupMember) return items.get(groupMember)?.icon ?? null;
+		return data.items.find((i) => familyOf(i.id) === id && i.icon)?.icon ?? null;
+	};
+
 	// Stations used by the recipes, plus the storage-only ones.
 	const stationIds = new Set<string>();
 	for (const r of recipes.values()) for (const s of r.stations) stationIds.add(baseBuildingId(s));
@@ -318,5 +332,5 @@ export function buildModel(data: Gk2Data): Model {
 	}
 	targets.sort((a, b) => a.name.localeCompare(b.name));
 
-	return { recipes, producers, buildings, stations, targets, resolve, nameOf };
+	return { recipes, producers, buildings, stations, targets, resolve, nameOf, iconOf };
 }

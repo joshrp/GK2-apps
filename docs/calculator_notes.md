@@ -20,6 +20,8 @@ Where they differ, this file wins.
   and in blockage crafts with no outputs). Spec open question 2 is closed.
 - **In the first build:** Show hidden, Remember my inventory, and the remembered recipe choice per
   item.
+- **Targets are saved** in browser storage and stay until you remove them (agreed 2026-11-06).
+  Show hidden is saved too, and so are "Build this" choices (until undone with "Don't build").
 - **Later:** "Load newer data file" and the `schemaVersion` warning; the spec's nice-to-haves
   (craft order by station, unlock requirements).
 

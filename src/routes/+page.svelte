@@ -1,6 +1,8 @@
 <script lang="ts">
 import PerkPanel from '#lib/perks/PerkPanel.svelte';
+import PlanView from '#lib/plan/PlanView.svelte';
 import StationsPanel from '#lib/stations/StationsPanel.svelte';
+import TargetPicker from '#lib/targets/TargetPicker.svelte';
 
 const tabs = [
 	{ id: 'calculator', label: 'Calculator' },
@@ -55,7 +57,8 @@ function onTabKeydown(e: KeyboardEvent, index: number) {
 			aria-labelledby="tab-calculator"
 			hidden={current !== 'calculator'}
 		>
-			<h2>Targets</h2>
+			<TargetPicker />
+			<PlanView />
 		</div>
 		<div
 			id="panel-stations"
@@ -87,6 +90,9 @@ function onTabKeydown(e: KeyboardEvent, index: number) {
 	}
 
 	.header {
+		position: sticky;
+		top: 0;
+		z-index: 10;
 		background: var(--color-panel);
 		border-bottom: 1px solid var(--color-line);
 		padding: 0 var(--space-4);
@@ -127,11 +133,6 @@ function onTabKeydown(e: KeyboardEvent, index: number) {
 
 	.perks {
 		max-width: var(--panel-width);
-	}
-
-	h2 {
-		font-size: var(--font-size-lg);
-		margin: 0 0 var(--space-2);
 	}
 
 	.footer {

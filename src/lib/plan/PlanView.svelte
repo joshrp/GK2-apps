@@ -59,23 +59,22 @@ function dismissWarnings() {
 {/if}
 
 {#if targetQueue.items.length > 0}
-	<div class="plan">
-		<div class="tree">
-			<PlanTree roots={result.roots} levels={perkLevels.levels} />
-		</div>
-		<aside class="summary" aria-label="Totals">
+	<div class="tree section">
+		<PlanTree roots={result.roots} levels={perkLevels.levels} />
+	</div>
+	<div class="section" role="region" aria-label="Totals">
+		<div class="summary">
 			<PlanSummary plan={result} />
-		</aside>
+		</div>
 	</div>
 {/if}
 
 <style>
-	.plan {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 340px;
-		gap: var(--space-4);
+	/* Targets, Steps and the totals are separated by a 2px white line. */
+	.section {
 		margin-top: var(--space-4);
-		align-items: start;
+		padding-top: var(--space-4);
+		border-top: 2px solid var(--color-text);
 	}
 
 	.tree {
@@ -83,10 +82,7 @@ function dismissWarnings() {
 	}
 
 	.summary {
-		padding: var(--space-3);
-		background: var(--color-panel);
-		border: 1px solid var(--color-line);
-		border-radius: var(--radius);
+		max-width: 560px;
 	}
 
 	.warning {

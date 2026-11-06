@@ -7,7 +7,7 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"includes": ["**", "!.svelte-kit", "!build", "!docs"]
+		"includes": ["**", "!.svelte-kit", "!build", "!docs", "!data_export"]
 	},
 	"formatter": {
 		"enabled": true,

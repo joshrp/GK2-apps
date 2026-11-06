@@ -6,8 +6,11 @@ Decisions for the Settings panel "perk levels" slice, agreed 2026-11-05. Read al
 ## Decisions
 
 ### Scope and data
-- Local use only for now. CI/GitHub Pages is ignored, and the data is imported from `data_export/`
-  (gitignored), not committed.
+- The game data is committed (agreed 2026-11-06, replacing "local use only"): `data_export/`'s
+  JSON, types, README and SCHEMA are in the repo, so CI can check, test and build. The repo is
+  private, but the deployed Pages site is public and bundles the full JSON (about 190 KB
+  gzipped); the user accepted that. Icons (`data_export/icons/`) stay gitignored until the app
+  shows them. No trimming for now: dropping `raw` would only save about 75 KB gzipped.
 - Only perks that change the calculator's result are listed: 19 perks.
   - Yield: Axeman, Blacksmith, Brewer, Carpenter, Compost Chemist, Cook, Cook II, Cremator,
     Cube distillations, Engineer, Fireman, Fish Filleter, Gear Master, Glassworker, Paper maker,

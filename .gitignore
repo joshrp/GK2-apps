@@ -8,9 +8,6 @@ node_modules
 /.svelte-kit
 /build
 
-# Game data export: the data is committed; icons stay local until the app uses them
-/data_export/icons
-
 # OS
 .DS_Store
 Thumbs.db

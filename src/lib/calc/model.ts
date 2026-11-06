@@ -1,5 +1,11 @@
 import type { Craft, Gk2Data, ItemStack, Quantity, RefKind } from '#lib/data/gk2';
-import { COMES_WITH_GAME, KNOWN_STATION_COSTS, STATION_FIXES, STORAGE_ONLY } from './stationFixes';
+import {
+	COMES_WITH_GAME,
+	KNOWN_LOCATIONS,
+	KNOWN_STATION_COSTS,
+	STATION_FIXES,
+	STORAGE_ONLY
+} from './stationFixes';
 
 /** An ingredient line: an input of a craft, or a line of a build cost. */
 export interface Line {
@@ -44,6 +50,8 @@ export interface Station {
 	id: string;
 	name: string;
 	icon: string | null;
+	/** Where it's built, A–Z (more than one when several build menus offer it). Empty = unknown. */
+	locations: string[];
 	cost: StationCost;
 	/** Listed for completeness only; no recipe runs there (firewood sheds). */
 	storageOnly: boolean;
@@ -238,11 +246,26 @@ export function buildModel(data: Gk2Data): Model {
 	const stationIds = new Set<string>();
 	for (const r of recipes.values()) for (const s of r.stations) stationIds.add(baseBuildingId(s));
 	for (const s of STORAGE_ONLY) stationIds.add(s);
+	const zones = new Map(data.zones.map((z) => [z.id, z]));
+	/** Names of the (non-dev, named) zones whose build menu offers it, A–Z; else a known one. */
+	const locationsOf = (id: string): string[] => {
+		const zoneIds = [buildables.get(id), buildables.get(`${id}_place`)].flatMap(
+			(b) => b?.zones ?? []
+		);
+		const names = new Set<string>();
+		for (const zoneId of zoneIds) {
+			const zone = zones.get(zoneId);
+			if (zone && !zone.likelyDev && zone.name) names.add(zone.name);
+		}
+		if (names.size === 0 && KNOWN_LOCATIONS[id]) names.add(KNOWN_LOCATIONS[id]);
+		return [...names].sort((a, b) => a.localeCompare(b));
+	};
 	const stations: Station[] = [...stationIds]
 		.map((id) => ({
 			id,
 			name: nameOf(id),
 			icon: buildables.get(id)?.icon ?? buildables.get(`${id}_place`)?.icon ?? null,
+			locations: locationsOf(id),
 			cost: buildings.has(id)
 				? { kind: 'build' as const, buildingId: id }
 				: COMES_WITH_GAME.has(id)

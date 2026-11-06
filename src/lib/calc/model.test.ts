@@ -285,6 +285,27 @@ describe('buildModel (game data)', () => {
 		}
 	});
 
+	it('gives station locations from the build menus, A–Z, without dev copies', () => {
+		const at = (id: string) => stations[id]?.locations;
+		expect(at('circular_saw')).toEqual(['Yard']);
+		expect(at('autopsy_table_1')).toEqual(['Morgue']);
+		expect(at('millstone')).toEqual(['Home']);
+		expect(at('formulation_bench')).toEqual(['Alchemy Lab', 'Writing Room']);
+		expect(at('firewood_shed_kitchen_1')).toEqual(['Alchemy Lab', 'Home', 'Vineyard Basement']);
+	});
+
+	it('uses the known locations where no build menu offers a station, else none', () => {
+		const at = (id: string) => stations[id]?.locations;
+		for (const id of ['kitchen_table', 'kitchen_table_t2', 'kitchen_oven', 'kitchen_oven_t2']) {
+			expect(at(id)).toEqual(['Home']);
+		}
+		expect(at('compost_pile_1')).toEqual(['Garden']);
+		expect(at('compost_pile_2')).toEqual(['Garden']);
+		expect(at('base_locked_door_tower')).toEqual([]);
+		const unknown = m.stations.filter((s) => s.locations.length === 0).map((s) => s.id);
+		expect(unknown).toEqual(['base_locked_door_tower']);
+	});
+
 	it('has no zombie stations, and every station has a name', () => {
 		for (const s of m.stations) {
 			expect(s.id).not.toMatch(/zombie|sawmill_wood_crafter|mine_ore_coal_crafter/);

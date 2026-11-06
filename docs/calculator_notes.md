@@ -87,6 +87,14 @@ on `wooden_anvil_place`).
   Minced Meat are made, and stays visible. "Kitchen: Millstone" (`conveyor_kitchen_millstone`,
   2 Polished Stone + 4 Stick + 2 Iron Detail) is the conveyor one and is hidden.
 
+### Location column
+- Where a station is built: the names of the build menus (zones) that offer it, dev copies
+  left out. Several are listed A–Z, one per line (Formulation Bench: Alchemy Lab, Writing Room;
+  the kitchen Firewood shed: Alchemy Lab, Home, Vineyard Basement).
+- Stations no build menu offers use known locations (agreed 2026-11-06): Kitchen Table, Kitchen
+  Table II, Kitchen Oven, Kitchen Oven II = Home; Compost Pile, Compost Pile II = Garden.
+- Locked door: "Unknown".
+
 ### How stations feed the calculator
 1. Where an item has several recipes, the default is one at a station you own.
 2. A step at a station you don't own is flagged "Not built: <station>".

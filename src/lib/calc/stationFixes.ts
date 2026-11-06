@@ -81,10 +81,17 @@ export const COMES_WITH_GAME: ReadonlySet<string> = new Set([
 	'compost_pile_1'
 ]);
 
-/** Where a station is, for stations that share a name in the game. */
-export const STATION_LOCATIONS: Readonly<Record<string, string>> = {
-	firewood_shed_1: 'Outside',
-	firewood_shed_kitchen_1: 'In the kitchen'
+/**
+ * Locations from the game for stations no build menu offers (agreed 2026-11-06). Used only while
+ * the export gives none. Anything without a location shows "Unknown" (e.g. Locked door).
+ */
+export const KNOWN_LOCATIONS: Readonly<Record<string, string>> = {
+	kitchen_table: 'Home',
+	kitchen_table_t2: 'Home',
+	kitchen_oven: 'Home',
+	kitchen_oven_t2: 'Home',
+	compost_pile_1: 'Garden',
+	compost_pile_2: 'Garden'
 };
 
 /** Listed on the Stations tab for completeness only: they store firewood, no recipe runs there. */

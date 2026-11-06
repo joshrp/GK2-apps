@@ -3,7 +3,6 @@ import { onMount } from 'svelte';
 import { evaluateQuantity } from '#lib/calc/formula';
 import { gameModel } from '#lib/calc/gameModel';
 import type { Station } from '#lib/calc/model';
-import { STATION_LOCATIONS } from '#lib/calc/stationFixes';
 import { iconUrl } from '#lib/data/icons';
 import { perkLevels } from '#lib/perks/perkLevels.svelte';
 import { ownedStations } from './ownedStations.svelte';
@@ -69,6 +68,7 @@ const focusIfReturning = (el: HTMLElement) => {
 		<tr>
 			<th scope="col"><span class="visually-hidden">Icon</span></th>
 			<th scope="col">Station</th>
+			<th scope="col">Location</th>
 			<th scope="col">I have this</th>
 			<th scope="col">Build cost</th>
 		</tr>
@@ -87,9 +87,18 @@ const focusIfReturning = (el: HTMLElement) => {
 				<td>
 					<label for="owned-{station.id}">{station.name}</label>
 					{#if station.storageOnly}
-						<span class="note"
-							>{STATION_LOCATIONS[station.id] ?? ''}. Stores firewood only; not used by any recipe.</span
-						>
+						<span class="note">Stores firewood only; not used by any recipe.</span>
+					{/if}
+				</td>
+				<td>
+					{#if station.locations.length === 0}
+						Unknown
+					{:else}
+						<ul class="cost">
+							{#each station.locations as location}
+								<li>{location}</li>
+							{/each}
+						</ul>
 					{/if}
 				</td>
 				<td class="have">

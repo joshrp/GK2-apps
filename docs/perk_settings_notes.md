@@ -28,7 +28,8 @@ Decisions for the Settings panel "perk levels" slice, agreed 2026-11-05. Read al
   revisited after the app has been in use.
 - Colours with a job (agreed 2026-11-06, replacing the single amber accent): focus border
   `#32a852` green, warnings `#d9a54a` amber, invalid input `#e05252` red.
-- The panel sits on the left, with targets and output to its right.
+- The panel is on the **Perks** tab (it sat on the left until the calculator's tabs replaced the
+  left panel on 2026-11-06; see [calculator_notes.md](calculator_notes.md), "Layout").
 - One row per perk, three columns:
   1. perk name
   2. level: a number input starting at 0, whole numbers, min 0, no max, native up/down arrows
@@ -79,12 +80,8 @@ with zombies, workers or conveyors:
 - **Conveyor-related perks and switches.** The data has `zombie_conveyor_transporter_ready` and
   `basement_blockage_conveyors_darkness_destroyed` (spec open question 2). Neither is used yet.
 
-## Parked until the calculator is built
-- **Perk level range.** The data has none. Some formulas break at higher levels: Heat Saver gives
-  negative fuel above level 1, and chance formulas exceed 1. Decide on clamping or limits then.
-- **The 2px gap** between the number and the arrows. Chrome may not honour it, so review it in
-  the built app.
-- **Two perks on one recipe** (Bread etc.): refine the display if it's confusing.
-- **"Improve newspaper I/II"** are listed under Paper maker (their guaranteed output uses the
-  perk). Not yet seen in the game, so it's unknown whether they're craftable items or upgrades.
-  Printing Press and Newspaper are confirmed craftable.
+## Parked until the calculator is built (all settled)
+- **Perk level range.** Settled 2026-11-06: no maximum, and a calculated amount never goes below
+  0 (see [calculator_notes.md](calculator_notes.md), "Perk levels").
+- The other parked display items (the 2px gap before the number arrows, two perks on one recipe,
+  "Improve newspaper I/II") were dropped on 2026-11-06: no further work planned.

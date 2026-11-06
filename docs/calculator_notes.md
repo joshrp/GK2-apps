@@ -22,8 +22,10 @@ Where they differ, this file wins.
   item.
 - **Targets are saved** in browser storage and stay until you remove them (agreed 2026-11-06).
   Show hidden is saved too, and so are "Build this" choices (until undone with "Don't build").
-- **Later:** "Load newer data file" and the `schemaVersion` warning; the spec's nice-to-haves
-  (craft order by station, unlock requirements).
+- **Later:** unlock requirements (the spec's nice-to-have (d)).
+- **Dropped (2026-11-06):** the "Load newer data file" button, and with it the `schemaVersion`
+  warning (the built-in data is the only data); the craft-order list grouped by station (spec
+  nice-to-have (c)). A newer export is taken in by replacing `data_export/` and running the tests.
 
 ## Perk levels (parked item, settled)
 
@@ -34,18 +36,71 @@ Where they differ, this file wins.
 ## Layout
 
 - Three tabs shown side by side in the header, left to right: **Calculator**, **Stations**,
-  **Perks**. They replace the left panel.
-- **Perks** holds the existing perk panel, including its own footnote.
-- **Calculator** holds the targets, the output and its options (Show hidden, Remember my
-  inventory).
+  **Perks**. They replace the left panel. The header is sticky: it stays at the top on scroll.
+- **Perks** holds the existing perk panel (450px wide), including its own footnote.
+- **Calculator**, top to bottom, separated by full-width 2px white lines:
+  1. **Targets**: heading with the options (Show hidden, Remember my inventory), the search
+     picker and the target list.
+  2. **Steps**: the plan tree, full width (scrolls sideways if the window is narrow).
+  3. **Totals** (max 560px wide, no box): Required items (with furnace fuel), Required buildings /
+     tools, Stations to build.
 - **Stations** is described below.
 - The footer note "Conveyors and Zombies are not included at this time" is on every tab.
+- The app always opens on the Calculator tab; the chosen tab isn't remembered.
 
 ## Icons
 
-- Shown in the first build. `data_export/icons/` (854 PNGs, 3.4 MB) is committed when the
-  Stations tab first shows them, and `.gitignore` is updated then. Pixelated scaling, text
-  placeholder when there's no icon (spec).
+- `data_export/icons/` (854 PNGs, 3.4 MB) is committed. `src/lib/data/icons.ts` imports them
+  with `?no-inline`, so the build ships each as its own file instead of inlining them into the
+  script. Pixelated scaling; a "?" box when there's no icon.
+
+## Calculator
+
+### Targets
+- Search any part of a name (any case); names starting with the query first; up to 20 matches,
+  with icons and "Building", "Added" and "Hidden" tags. Arrow keys + Enter or click to add; Esc
+  clears. A target is never added twice. Quantity: whole number of 1 or more, else a red border
+  and "Enter a whole number, 1 or more."
+- Targets are saved until removed with ×.
+
+### Steps tree
+- Columns: Item | Need | Have | Crafts | Spare | Station.
+- Under the item name: "Gather / buy" on Required items, "N from spare", "Tier not guaranteed"
+  (amber), and a recipe dropdown when there are several recipes.
+- Recipe dropdown options read "inputs → amount made · station", e.g.
+  `1 Fat, 2 Clay Plate, 20 fuel → 4 · Distillation Cube` (many alternatives share a name). The
+  choice is saved per item and applies everywhere that item appears.
+- Default recipe: the chosen one if it makes the item, else the first at a station you have or
+  are building, else the first.
+- Station column: alternatives stacked, "To build" tag, amber "Not built" flag when none is owned
+  or being built, "Station unknown" when the data has none.
+- Fuel rows ("Fuel N units"); building targets and stations being built are their own rows.
+
+### Inventory (Have column)
+- One count per item key, shared by every row of that item and used up once across the plan.
+- Blank = not checked yet: the row stays collapsed and shows its need. A count below the need
+  shows "Short N" and opens the row for the shortfall only. Enough shows a green "Covered".
+  0 is not blank (checked, have none). Invalid text gets a red border and isn't used.
+- ▸/▾, "Expand all" and "Collapse all" override the automatic open/closed state; entering a new
+  count on a row puts it back to the automatic rule.
+- Text stays white on covered rows (no dimming). The Have field is only on tree rows, not in the
+  Required items list.
+- Remember my inventory: off by default (inventory starts empty each visit). On saves the counts
+  on every change; turning it off deletes the saved counts.
+
+### Saved in browser storage
+| Key | What |
+|---|---|
+| `gk2calc.perkLevels` | perk levels |
+| `gk2calc.ownedStations` | "I have this" stations |
+| `gk2calc.targets` | targets and quantities |
+| `gk2calc.showHidden` | Show hidden option |
+| `gk2calc.buildChoices` | stations chosen with "Build this" |
+| `gk2calc.recipeChoices` | recipe chosen per item |
+| `gk2calc.rememberInventory`, `gk2calc.inventory` | Remember option and the counts |
+
+Each store drops unusable saved data, says so in a dismissible warning, and warns when the
+browser blocks storage.
 
 ## Stations
 
@@ -55,13 +110,15 @@ through the fixes below. `X` and `X_place` are one station (e.g. `wooden_anvil` 
 on `wooden_anvil_place`).
 
 ### Stations tab
-- One row per station: icon, name, an "I have this" checkbox, and its build cost (the Place cost).
+- One row per station: icon, name, location, an "I have this" checkbox, and its build cost (the
+  Place cost), one cost item per line.
 - Saved in browser storage.
 - Starting stations are ticked by default, but not locked: they can be unticked like any other.
   - Sawhorse, Woodworking Workbench I, Wooden Anvil, Kitchen Oven, Kitchen Table, Compost Pile,
     and both Firewood sheds (`firewood_shed_1` outside, `firewood_shed_kitchen_1` in the kitchen).
 - The Firewood sheds aren't stations: they only store firewood, and no recipe runs there. They
-  are listed for completeness only and never affect a plan.
+  are listed for completeness only, with the note "Stores firewood only; not used by any recipe.",
+  and never affect a plan.
 - Reset button: unticks every station, starting ones included ("Reset can still clear them").
 - Tiers are separate stations that can be owned side by side: owning Woodworking Workbench II
   says nothing about I, and the other way round.
@@ -96,10 +153,14 @@ on `wooden_anvil_place`).
 - Locked door: "Unknown".
 
 ### How stations feed the calculator
-1. Where an item has several recipes, the default is one at a station you own.
-2. A step at a station you don't own is flagged "Not built: <station>".
+1. Where an item has several recipes, the default is one at a station you own (or are building).
+2. A step where you have none of its stations is flagged "Not built".
 3. A "Stations to build" section lists missing stations. A station's build cost is added to the
-   plan (once, expanded like any other target) only when you choose "Build this" for it.
+   plan (once, expanded like any other target) only when you choose "Build this" for it; "Don't
+   build" undoes it. Stations without a known cost show "Comes with the game" or "Build cost
+   unknown" instead of the button. Ticking a station on the Stations tab stops it being built.
+4. "Required buildings / tools" lists each station group the plan uses ("Iron Anvil or Steel
+   Anvil" is one line), marked Have, To build or Not built.
 
 ### Display
 - Where a recipe can be done at two or more stations (128 recipes), the stations are stacked in
@@ -128,6 +189,24 @@ The gap should also be reported for the data export.
 - **"Any of" groups that aren't quality tiers** (skin, skulls, bones, heart, brain, guts) are one
   gather line, e.g. "Skin (any) × N", with one inventory count.
 
+## Status (2026-11-06)
+
+Steps 1–10 below are built and committed on the `calculator` branch (82b4adc, f889711, 28caa0a,
+27fe81f, plus these notes). Not pushed, not merged into `main`; GitHub Pages isn't enabled yet.
+
+### Not built yet (from the spec)
+- **Unlock requirements** (nice-to-have (d)): "needs tech: …", or "unlock: unknown" where the
+  data has no source.
+- **Left out on purpose:** "Use conveyor recipes" and anything zombie or worker related (see
+  Scope).
+- **Dropped:** "Load newer data file" with the `schemaVersion` warning, and the craft-order list
+  by station (see Scope).
+
+### Still open
+- Data export gaps to report: the 38 crafts with no station (fixed in the app for 26), the 6
+  station costs and the 6 station locations supplied by hand (`src/lib/calc/stationFixes.ts`).
+- Layout is desktop only; styling to be revisited after use.
+
 ## Build plan
 
 Each step ends with tests, all three checks passing, and a stop to check in.
@@ -147,8 +226,9 @@ Each step ends with tests, all three checks passing, and a stop to check in.
    "Not built" flags and chosen build costs out. Prefers recipes at owned stations; cycle guard.
    The spec's 4 Reinforced Beam check is a test.
 7. Target picker: search, quantities, remove, Show hidden.
-8. Output: tree and flat list side by side, stacked station column, "Not built" flag, "Build
-   this" choice.
+8. Output: tree and flat list (first side by side; later moved below the tree), stacked station
+   column, "Not built" flag, "Build this" choice.
 9. Recipe dropdowns, choice remembered per item.
 10. Inventory: one count per item, blank / short / covered states, Remember my inventory.
-11. Later: newer data file and schema warning, craft order by station, unlock requirements.
+11. Later: unlock requirements. (Newer data file, schema warning and craft order by station were
+    dropped.)

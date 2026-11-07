@@ -200,10 +200,15 @@ The gap should also be reported for the data export.
 - **"Any of" groups that aren't quality tiers** (skin, skulls, bones, heart, brain, guts) are one
   gather line, e.g. "Skin (any) × N", with one inventory count.
 
-## Status (2026-11-06)
+## Status (2026-11-07)
 
 Steps 1–10 below are built and committed on the `calculator` branch (82b4adc, f889711, 28caa0a,
 27fe81f, plus these notes). Not pushed, not merged into `main`; GitHub Pages isn't enabled yet.
+
+### Added since (2026-11-07)
+- Target order (d1645e7): ↑/↓ buttons, saved order, focus kept at the ends; steps say "N used
+  above" when earlier steps already used some of the count. See Targets and Inventory above.
+- New targets go at the top of the list (9cfe9d4).
 
 ### Not built yet (from the spec)
 - **Unlock requirements** (nice-to-have (d)): "needs tech: …", or "unlock: unknown" where the
@@ -217,6 +222,8 @@ Steps 1–10 below are built and committed on the `calculator` branch (82b4adc, 
 - Data export gaps to report: the 38 crafts with no station (fixed in the app for 26), the 6
   station costs and the 6 station locations supplied by hand (`src/lib/calc/stationFixes.ts`).
 - Layout is desktop only; styling to be revisited after use.
+- Searching "Chest" lists two buildings both named "Chest". Not looked into yet: check whether
+  they're different buildings or a duplicate the `X`/`X_place` merge missed.
 
 ## Build plan
 

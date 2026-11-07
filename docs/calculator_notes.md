@@ -35,8 +35,9 @@ Where they differ, this file wins.
 
 ## Layout
 
-- Three tabs shown side by side in the header, left to right: **Calculator**, **Stations**,
-  **Perks**. They replace the left panel. The header is sticky: it stays at the top on scroll.
+- Four tabs shown side by side in the header, left to right: **Calculator**, **Days**,
+  **Stations**, **Perks**. They replace the left panel. The header is sticky: it stays at the
+  top on scroll. (Days added 2026-11-07.)
 - **Perks** holds the existing perk panel (450px wide), including its own footnote.
 - **Calculator**, top to bottom, separated by full-width 2px white lines:
   1. **Targets**: heading with the options (Show hidden, Remember my inventory), the search
@@ -44,7 +45,7 @@ Where they differ, this file wins.
   2. **Steps**: the plan tree, full width (scrolls sideways if the window is narrow).
   3. **Totals** (max 560px wide, no box): Required items (with furnace fuel), Required buildings /
      tools, Stations to build.
-- **Stations** is described below.
+- **Days** and **Stations** are described below.
 - The footer note "Conveyors and Zombies are not included at this time" is on every tab.
 - The app always opens on the Calculator tab; the chosen tab isn't remembered.
 
@@ -112,6 +113,18 @@ Where they differ, this file wins.
 
 Each store drops unusable saved data, says so in a dismissible warning, and warns when the
 browser blocks storage.
+
+## Days
+
+Agreed 2026-11-07.
+
+- Standalone: it doesn't read from or feed into the calculator, and nothing is saved in browser
+  storage.
+- One full-width table (`src/lib/days/DaysPanel.svelte`), styled like the Stations table: a
+  header row and 6 rows, with columns **Colour**, **Icon**, **Location**, **Notes**, **Day**.
+- Cells are display only and hold fixed text, kept in the `rows` list in the component. The rows
+  are blank for now (no labels), each at least 40px high so they don't collapse while empty.
+- No heading above the table (Stations has one; can be added if wanted).
 
 ## Stations
 
@@ -209,6 +222,8 @@ Steps 1–10 below are built and committed on the `calculator` branch (82b4adc, 
 - Target order (d1645e7): ↑/↓ buttons, saved order, focus kept at the ends; steps say "N used
   above" when earlier steps already used some of the count. See Targets and Inventory above.
 - New targets go at the top of the list (9cfe9d4).
+- Days tab after Calculator: a blank 5-column, 6-row table, display only (see Days above). Not
+  committed yet; row text still to come.
 
 ### Not built yet (from the spec)
 - **Unlock requirements** (nice-to-have (d)): "needs tech: …", or "unlock: unknown" where the

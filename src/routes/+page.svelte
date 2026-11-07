@@ -1,4 +1,5 @@
 <script lang="ts">
+import DaysPanel from '#lib/days/DaysPanel.svelte';
 import PerkPanel from '#lib/perks/PerkPanel.svelte';
 import PlanView from '#lib/plan/PlanView.svelte';
 import StationsPanel from '#lib/stations/StationsPanel.svelte';
@@ -6,6 +7,7 @@ import TargetPicker from '#lib/targets/TargetPicker.svelte';
 
 const tabs = [
 	{ id: 'calculator', label: 'Calculator' },
+	{ id: 'days', label: 'Days' },
 	{ id: 'stations', label: 'Stations' },
 	{ id: 'perks', label: 'Perks' }
 ] as const;
@@ -59,6 +61,9 @@ function onTabKeydown(e: KeyboardEvent, index: number) {
 		>
 			<TargetPicker />
 			<PlanView />
+		</div>
+		<div id="panel-days" role="tabpanel" aria-labelledby="tab-days" hidden={current !== 'days'}>
+			<DaysPanel />
 		</div>
 		<div
 			id="panel-stations"

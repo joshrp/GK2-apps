@@ -73,14 +73,14 @@ describe('parseQuantity', () => {
 });
 
 describe('TargetQueue', () => {
-	it('adds with quantity 1, once per target, in order', () => {
+	it('adds at the top with quantity 1, once per target (adding again doesn’t move it)', () => {
 		const q = new TargetQueue(targets, () => memoryStorage());
 		q.add(targets[0]);
 		q.add(targets[2]);
 		expect(q.add(targets[0])).toBe('item:beam');
 		expect(q.items.map((x) => [x.key, x.quantity])).toEqual([
-			['item:beam', 1],
-			['building:bench', 1]
+			['building:bench', 1],
+			['item:beam', 1]
 		]);
 		expect(q.has(targets[2])).toBe(true);
 		expect(q.has(targets[1])).toBe(false);
@@ -106,9 +106,10 @@ describe('TargetQueue', () => {
 	it('moves a target up or down one place, and saves the new order', () => {
 		const storage = memoryStorage();
 		const q = new TargetQueue(targets, () => storage);
-		const beam = q.add(targets[0]);
-		const oiled = q.add(targets[1]);
 		const plank = q.add(targets[4]);
+		const oiled = q.add(targets[1]);
+		const beam = q.add(targets[0]);
+		expect(q.items.map((x) => x.id)).toEqual(['beam', 'oiled', 'plank']);
 		q.move(plank, -1);
 		expect(q.items.map((x) => x.id)).toEqual(['beam', 'plank', 'oiled']);
 		q.move(beam, 1);
@@ -134,8 +135,8 @@ describe('TargetQueue', () => {
 		const next = new TargetQueue(targets, () => storage);
 		next.load();
 		expect(next.items.map((x) => [x.key, x.name, x.quantity])).toEqual([
-			['item:beam', 'Wooden beam', 4],
-			['building:bench', 'Beam bench', 1]
+			['building:bench', 'Beam bench', 1],
+			['item:beam', 'Wooden beam', 4]
 		]);
 
 		next.remove(bench);

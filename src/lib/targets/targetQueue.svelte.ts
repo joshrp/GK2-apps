@@ -110,7 +110,8 @@ function toQueued(target: Target): QueuedTarget {
 }
 
 /**
- * The targets the plan is for, in the order added, saved to browser storage on every change.
+ * The targets the plan is for, newest first unless reordered, saved to browser storage on every
+ * change.
  * They stay until removed. Nothing touches storage until `load()`, as the page is prerendered.
  */
 export class TargetQueue {
@@ -144,11 +145,14 @@ export class TargetQueue {
 		if (problems.length > 0) this.#save();
 	}
 
-	/** Adds a target with quantity 1. Returns its key; a target already queued isn't added twice. */
+	/**
+	 * Adds a target at the top with quantity 1, so it gets first call on inventory and spare.
+	 * Returns its key; a target already queued isn't added twice (and doesn't move).
+	 */
 	add(target: Target): string {
 		const key = keyOf(target);
 		if (!this.items.some((t) => t.key === key)) {
-			this.items.push(toQueued(target));
+			this.items.unshift(toQueued(target));
 			this.#save();
 		}
 		return key;

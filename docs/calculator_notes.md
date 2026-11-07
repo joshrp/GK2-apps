@@ -62,6 +62,8 @@ Where they differ, this file wins.
   clears. A target is never added twice. Quantity: whole number of 1 or more, else a red border
   and "Enter a whole number, 1 or more."
 - Targets are saved until removed with ×.
+- **New targets go at the top** (agreed 2026-11-07), so the newest target gets first call on
+  inventory and spare until moved. Adding one that's already there doesn't move it.
 - **Order (agreed 2026-11-07).** ↑/↓ buttons on each target move it one place (disabled at the
   ends); the order is saved. Targets get inventory and spare in this order, top first, so moving
   one up gives it first call on what you have (e.g. Chest before Wooden Kit I for Oiled Plank).

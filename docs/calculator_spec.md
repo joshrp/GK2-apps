@@ -3,7 +3,7 @@
 Discovery session 2026-10-27. Data: `gk2-data.json` schema 0.1.0 (Steam build 25910882).
 Private, desktop-only, hosted page. **Do not start the build until the `icons/` folder has been provided.**
 
-> **Status (2026-11-06):** built on the `calculator` branch (icons provided). Decisions made
+> **Status (2026-11-07):** built on the `calculator` branch and merged into `main`. Decisions made
 > during the build are in [calculator_notes.md](calculator_notes.md), which wins over this spec
 > where they differ; its "Status" section lists what is built and what is left.
 

@@ -217,15 +217,17 @@ The gap should also be reported for the data export.
 
 ## Status (2026-11-07)
 
-Steps 1–10 below are built and committed on the `calculator` branch (82b4adc, f889711, 28caa0a,
-27fe81f, plus these notes). Not pushed, not merged into `main`; GitHub Pages isn't enabled yet.
+Steps 1–10 below are built (82b4adc, f889711, 28caa0a, 27fe81f, plus these notes). The
+`calculator` branch, with everything under "Added since", was pushed and merged into `main`
+(fast-forward) and `main` pushed on 2026-11-07. GitHub Pages isn't enabled yet, so the deploy
+job doesn't publish anything.
 
 ### Added since (2026-11-07)
 - Target order (d1645e7): ↑/↓ buttons, saved order, focus kept at the ends; steps say "N used
   above" when earlier steps already used some of the count. See Targets and Inventory above.
 - New targets go at the top of the list (9cfe9d4).
-- Days tab after Calculator (835f772): a 5-column, 6-row table of fixed text, display only (see
-  Days above). Row text added after that commit.
+- Days tab after Calculator (835f772), with its six rows of fixed text (fc4aa34): display only
+  (see Days above).
 
 ### Not built yet (from the spec)
 - **Unlock requirements** (nice-to-have (d)): "needs tech: …", or "unlock: unknown" where the

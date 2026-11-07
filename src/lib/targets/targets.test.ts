@@ -103,6 +103,26 @@ describe('TargetQueue', () => {
 		expect(q.items.map((x) => x.id)).toEqual(['oiled']);
 	});
 
+	it('moves a target up or down one place, and saves the new order', () => {
+		const storage = memoryStorage();
+		const q = new TargetQueue(targets, () => storage);
+		const beam = q.add(targets[0]);
+		const oiled = q.add(targets[1]);
+		const plank = q.add(targets[4]);
+		q.move(plank, -1);
+		expect(q.items.map((x) => x.id)).toEqual(['beam', 'plank', 'oiled']);
+		q.move(beam, 1);
+		expect(q.items.map((x) => x.id)).toEqual(['plank', 'beam', 'oiled']);
+		// Nothing happens at either end.
+		q.move(q.items[0].key, -1);
+		q.move(oiled, 1);
+		expect(q.items.map((x) => x.id)).toEqual(['plank', 'beam', 'oiled']);
+
+		const next = new TargetQueue(targets, () => storage);
+		next.load();
+		expect(next.items.map((x) => x.id)).toEqual(['plank', 'beam', 'oiled']);
+	});
+
 	it('saves every change, so a new queue loads it until removed', () => {
 		const storage = memoryStorage();
 		const q = new TargetQueue(targets, () => storage);

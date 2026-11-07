@@ -15,8 +15,21 @@ export function rowState(node: PlanNode, counts: Readonly<Record<string, number>
 	return node.fromInventory + node.fromSpare >= node.need ? 'covered' : 'short';
 }
 
+/**
+ * A root's part of a row path: the target (or station being built) rather than its position, so
+ * rows opened or closed by hand stay with a target when the targets are reordered.
+ */
+export function rootId(node: PlanNode): string {
+	if (node.kind === 'item') return `item:${node.key}`;
+	if (node.kind === 'building') return `${node.forStation ? 'station' : 'building'}:${node.id}`;
+	return 'fuel';
+}
+
 export interface TreeRow {
-	/** Position in the tree, e.g. "0.1.2"; stable while the plan's shape stays the same. */
+	/**
+	 * The root's id, then positions below it, e.g. "item:chest.1.2"; stable while that target's
+	 * part of the plan keeps its shape.
+	 */
 	path: string;
 	depth: number;
 	node: PlanNode;
@@ -45,7 +58,7 @@ export function treeRows(
 		if (!expanded) return;
 		for (const [i, child] of children.entries()) walk(child, `${path}.${i}`, depth + 1);
 	};
-	for (const [i, root] of roots.entries()) walk(root, String(i), 0);
+	for (const root of roots) walk(root, rootId(root), 0);
 	return rows;
 }
 
@@ -57,6 +70,6 @@ export function allParentPaths(roots: PlanNode[]): string[] {
 		if (children.length > 0) paths.push(path);
 		for (const [i, child] of children.entries()) walk(child, `${path}.${i}`);
 	};
-	for (const [i, root] of roots.entries()) walk(root, String(i));
+	for (const root of roots) walk(root, rootId(root));
 	return paths;
 }

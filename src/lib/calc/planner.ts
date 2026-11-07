@@ -60,6 +60,8 @@ export interface ItemNode {
 	/** Amount this line asks for. */
 	need: number;
 	fromInventory: number;
+	/** Of the count entered for this key, how much earlier lines in the plan already used. */
+	usedEarlier: number;
 	fromSpare: number;
 	/** How it's made, or null for a Required item. */
 	craft: CraftStep | null;
@@ -161,6 +163,7 @@ export function plan(model: Model, input: PlanInput): Plan {
 
 	function expandNeed(resolved: Need, need: number, ancestors: Set<string>): ItemNode {
 		const key = resolved.id;
+		const usedEarlier = (input.inventory?.[key] ?? 0) - (inventory.get(key) ?? 0);
 		const fromInventory = take(inventory, key, need);
 		const fromSpare = take(spare, key, need - fromInventory);
 		const shortfall = need - fromInventory - fromSpare;
@@ -170,6 +173,7 @@ export function plan(model: Model, input: PlanInput): Plan {
 			name: resolved.name,
 			need,
 			fromInventory,
+			usedEarlier,
 			fromSpare,
 			craft: null,
 			leafReason: null,

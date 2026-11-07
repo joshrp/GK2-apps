@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ItemNode, PlanNode } from '#lib/calc/planner';
-import { allParentPaths, rowState, treeRows } from './rows';
+import { allParentPaths, rootId, rowState, treeRows } from './rows';
 
 const node = (key: string, children: PlanNode[] = [], over: Partial<ItemNode> = {}): ItemNode => ({
 	kind: 'item',
@@ -8,6 +8,7 @@ const node = (key: string, children: PlanNode[] = [], over: Partial<ItemNode> = 
 	name: key,
 	need: 2,
 	fromInventory: 0,
+	usedEarlier: 0,
 	fromSpare: 0,
 	craft: null,
 	leafReason: null,
@@ -37,18 +38,18 @@ describe('rowState', () => {
 describe('treeRows', () => {
 	it('keeps unchecked rows collapsed, showing only their need', () => {
 		expect(treeRows(roots, {}).map((r) => [r.path, r.state, r.hasChildren, r.expanded])).toEqual([
-			['0', 'unchecked', true, false],
-			['1', 'unchecked', false, false]
+			['item:a', 'unchecked', true, false],
+			['item:d', 'unchecked', false, false]
 		]);
 	});
 
 	it('expands short rows', () => {
 		expect(treeRows(roots, { a: 0, b: 1 }).map((r) => r.path)).toEqual([
-			'0',
-			'0.0',
-			'0.0.0',
-			'0.1',
-			'1'
+			'item:a',
+			'item:a.0',
+			'item:a.0.0',
+			'item:a.1',
+			'item:d'
 		]);
 	});
 
@@ -57,16 +58,36 @@ describe('treeRows', () => {
 			roots,
 			{ a: 0 },
 			new Map([
-				['0', false],
-				['1', true]
+				['item:a', false],
+				['item:d', true]
 			])
 		);
-		expect(rows.map((r) => r.path)).toEqual(['0', '1']);
-		const opened = treeRows(roots, {}, new Map([['0', true]]));
-		expect(opened.map((r) => r.path)).toEqual(['0', '0.0', '0.1', '1']);
+		expect(rows.map((r) => r.path)).toEqual(['item:a', 'item:d']);
+		const opened = treeRows(roots, {}, new Map([['item:a', true]]));
+		expect(opened.map((r) => r.path)).toEqual(['item:a', 'item:a.0', 'item:a.1', 'item:d']);
+	});
+
+	it('keeps overrides with their target when the targets are reordered', () => {
+		const opened = treeRows([...roots].reverse(), {}, new Map([['item:a', true]]));
+		expect(opened.map((r) => r.path)).toEqual(['item:d', 'item:a', 'item:a.0', 'item:a.1']);
+	});
+
+	it('names roots by target, and stations being built apart from building targets', () => {
+		const building = (forStation: boolean): PlanNode => ({
+			kind: 'building',
+			id: 'saw',
+			name: 'Saw',
+			quantity: 1,
+			forStation,
+			children: []
+		});
+		expect([rootId(building(false)), rootId(building(true))]).toEqual([
+			'building:saw',
+			'station:saw'
+		]);
 	});
 
 	it('lists the rows that have children', () => {
-		expect(allParentPaths(roots)).toEqual(['0', '0.0']);
+		expect(allParentPaths(roots)).toEqual(['item:a', 'item:a.0']);
 	});
 });

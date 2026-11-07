@@ -163,6 +163,20 @@ export class TargetQueue {
 		this.#save();
 	}
 
+	/**
+	 * Moves a target one place up (-1) or down (1). The order decides which target gets
+	 * inventory and spare first. Does nothing at either end.
+	 */
+	move(key: string, by: -1 | 1): void {
+		const from = this.items.findIndex((t) => t.key === key);
+		const to = from + by;
+		if (from < 0 || to < 0 || to >= this.items.length) return;
+		const items = [...this.items];
+		[items[from], items[to]] = [items[to], items[from]];
+		this.items = items;
+		this.#save();
+	}
+
 	remove(key: string): void {
 		this.items = this.items.filter((t) => t.key !== key);
 		this.#save();

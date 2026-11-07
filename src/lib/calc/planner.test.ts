@@ -108,10 +108,30 @@ describe('plan (fixtures)', () => {
 			inventory: { plank: 3 }
 		});
 		const [first, second] = [root(p, 0), root(p, 1)].map((r) => items(r.children)[0]);
-		expect(first).toMatchObject({ need: 2, fromInventory: 2 });
+		expect(first).toMatchObject({ need: 2, fromInventory: 2, usedEarlier: 0 });
 		expect(first.craft?.crafts).toBe(0);
-		expect(second).toMatchObject({ need: 2, fromInventory: 1 });
+		expect(second).toMatchObject({ need: 2, fromInventory: 1, usedEarlier: 2 });
 		expect(second.craft?.crafts).toBe(1);
+	});
+
+	it('gives inventory to targets in their order, so moving one up gives it first call', () => {
+		const planks = (targets: { kind: 'item'; id: string; quantity: number }[]) => {
+			const p = plan(model, { targets, levels: {}, inventory: { plank: 2 } });
+			return p.roots.map((r) => {
+				const plank = items((r as ItemNode).children)[0];
+				return [plank.fromInventory, plank.usedEarlier];
+			});
+		};
+		const box = { kind: 'item' as const, id: 'box', quantity: 1 };
+		const shelf = { kind: 'item' as const, id: 'shelf', quantity: 1 };
+		expect(planks([box, shelf])).toEqual([
+			[2, 0],
+			[0, 2]
+		]);
+		expect(planks([shelf, box])).toEqual([
+			[1, 0],
+			[1, 1]
+		]);
 	});
 
 	it('takes inventory off Required items', () => {

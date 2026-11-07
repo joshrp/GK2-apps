@@ -1,5 +1,5 @@
 <script lang="ts">
-import { onMount } from 'svelte';
+import { onMount, tick } from 'svelte';
 import { gameModel } from '#lib/calc/gameModel';
 import type { Target } from '#lib/calc/model';
 import { iconUrl } from '#lib/data/icons';
@@ -73,6 +73,19 @@ function onQuantityInput(key: string, text: string) {
 	const quantity = parseQuantity(text);
 	invalid[key] = quantity === null;
 	if (quantity !== null) targetQueue.setQuantity(key, quantity);
+}
+
+/**
+ * Moves a target. When that takes it to the top or bottom, the button pressed is disabled and
+ * would drop keyboard focus, so focus goes to the row's other arrow instead.
+ */
+async function moveTarget(key: string, by: -1 | 1) {
+	targetQueue.move(key, by);
+	await tick();
+	const pressed = document.getElementById(`move-${by < 0 ? 'up' : 'down'}-${key}`);
+	if (pressed instanceof HTMLButtonElement && pressed.disabled) {
+		document.getElementById(`move-${by < 0 ? 'down' : 'up'}-${key}`)?.focus();
+	}
 }
 
 function remove(key: string) {
@@ -180,7 +193,7 @@ const showQuantity = (quantity: number) => (input: HTMLInputElement) => {
 	<p class="hint">Search above to add what you want to make.</p>
 {:else}
 	<ul class="queue">
-		{#each targetQueue.items as item (item.key)}
+		{#each targetQueue.items as item, i (item.key)}
 			{@const url = iconUrl(item.icon)}
 			<li class="row">
 				{#if url}
@@ -191,6 +204,26 @@ const showQuantity = (quantity: number) => (input: HTMLInputElement) => {
 				<label class="name" for="qty-{item.key}"
 					>{item.name}{#if item.kind === 'building'}<span class="tag">Building</span>{/if}</label
 				>
+				<span class="order">
+					<button
+						id="move-up-{item.key}"
+						class="move"
+						type="button"
+						aria-label="Move {item.name} up"
+						title="Move up: gets what you have first"
+						disabled={i === 0}
+						onclick={() => moveTarget(item.key, -1)}>↑</button
+					>
+					<button
+						id="move-down-{item.key}"
+						class="move"
+						type="button"
+						aria-label="Move {item.name} down"
+						title="Move down"
+						disabled={i === targetQueue.items.length - 1}
+						onclick={() => moveTarget(item.key, 1)}>↓</button
+					>
+				</span>
 				<input
 					id="qty-{item.key}"
 					class="field qty"
@@ -386,7 +419,7 @@ const showQuantity = (quantity: number) => (input: HTMLInputElement) => {
 
 	.row {
 		display: grid;
-		grid-template-columns: 24px minmax(0, 1fr) 72px 28px;
+		grid-template-columns: 24px minmax(0, 1fr) auto 72px 28px;
 		column-gap: var(--space-2);
 		align-items: center;
 		padding: var(--space-1) 0;
@@ -396,6 +429,34 @@ const showQuantity = (quantity: number) => (input: HTMLInputElement) => {
 	.qty[aria-invalid='true'],
 	.qty[aria-invalid='true']:focus {
 		border-color: var(--color-error);
+	}
+
+	.order {
+		display: flex;
+		gap: 2px;
+	}
+
+	.move {
+		width: 24px;
+		height: 28px;
+		padding: 0;
+		background: none;
+		border: 1px solid transparent;
+		border-radius: var(--radius);
+		color: var(--color-text);
+		font: inherit;
+		line-height: 1;
+		cursor: pointer;
+	}
+
+	.move:disabled {
+		opacity: 0.3;
+		cursor: default;
+	}
+
+	.move:focus-visible {
+		outline: none;
+		border-color: var(--color-focus);
 	}
 
 	.remove {

@@ -152,6 +152,9 @@ const iconFor = (node: PlanNode) =>
 							oninput={(e) => onHaveInput(row.path, key, e.currentTarget.value)}
 							{@attach showCount(inventory.counts[key])}
 						/>
+						{#if node.usedEarlier > 0 && !invalid[row.path]}
+							<span class="state">{node.usedEarlier} used above</span>
+						{/if}
 						{#if invalid[row.path]}
 							<span class="note-inline error">Whole number, 0 or more</span>
 						{:else if row.state === 'covered'}

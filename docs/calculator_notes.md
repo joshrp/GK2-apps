@@ -62,6 +62,12 @@ Where they differ, this file wins.
   clears. A target is never added twice. Quantity: whole number of 1 or more, else a red border
   and "Enter a whole number, 1 or more."
 - Targets are saved until removed with ×.
+- **Order (agreed 2026-11-07).** ↑/↓ buttons on each target move it one place (disabled at the
+  ends); the order is saved. Targets get inventory and spare in this order, top first, so moving
+  one up gives it first call on what you have (e.g. Chest before Wooden Kit I for Oiled Plank).
+  Stations chosen with "Build this" always come after the targets. Reordering only works between
+  targets: inside one target, steps still take stock in recipe order. Rows opened or closed by
+  hand stay with their target when it moves. (Drag and drop was considered and left for later.)
 
 ### Steps tree
 - Columns: Item | Need | Have | Crafts | Spare | Station.
@@ -81,6 +87,9 @@ Where they differ, this file wins.
 - Blank = not checked yet: the row stays collapsed and shows its need. A count below the need
   shows "Short N" and opens the row for the shortfall only. Enough shows a green "Covered".
   0 is not blank (checked, have none). Invalid text gets a red border and isn't used.
+- The Have field always shows the full count entered. When earlier steps in the plan have
+  already used some of it, the step says "N used above" (agreed 2026-11-07), so "Have 6 · 5 used
+  above · Short 3" explains itself.
 - ▸/▾, "Expand all" and "Collapse all" override the automatic open/closed state; entering a new
   count on a row puts it back to the automatic rule.
 - Text stays white on covered rows (no dimming). The Have field is only on tree rows, not in the

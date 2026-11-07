@@ -122,8 +122,10 @@ Agreed 2026-11-07.
   storage.
 - One full-width table (`src/lib/days/DaysPanel.svelte`), styled like the Stations table: a
   header row and 6 rows, with columns **Colour**, **Icon**, **Location**, **Notes**, **Day**.
-- Cells are display only and hold fixed text, kept in the `rows` list in the component. The rows
-  are blank for now (no labels), each at least 40px high so they don't collapse while empty.
+- Cells are display only and hold fixed text, kept in the `rows` list in the component. Colour
+  and Icon are plain words (no swatches or pictures). Line breaks in a cell show as typed. Rows
+  are at least 40px high. Filled in 2026-11-07, top to bottom: Wrath, Gluttony, Sloth, Lust,
+  Envy, Pride.
 - No heading above the table (Stations has one; can be added if wanted).
 
 ## Stations
@@ -222,8 +224,8 @@ Steps 1–10 below are built and committed on the `calculator` branch (82b4adc, 
 - Target order (d1645e7): ↑/↓ buttons, saved order, focus kept at the ends; steps say "N used
   above" when earlier steps already used some of the count. See Targets and Inventory above.
 - New targets go at the top of the list (9cfe9d4).
-- Days tab after Calculator: a blank 5-column, 6-row table, display only (see Days above). Not
-  committed yet; row text still to come.
+- Days tab after Calculator (835f772): a 5-column, 6-row table of fixed text, display only (see
+  Days above). Row text added after that commit.
 
 ### Not built yet (from the spec)
 - **Unlock requirements** (nice-to-have (d)): "needs tech: …", or "unlock: unknown" where the

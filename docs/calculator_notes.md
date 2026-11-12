@@ -73,7 +73,7 @@ Where they differ, this file wins.
   hand stay with their target when it moves. (Drag and drop was considered and left for later.)
 
 ### Steps tree
-- Columns: Item | Need | Have | Crafts | Spare | Station.
+- Columns: Item | Need | Have | Blocked | Crafts | Spare | Station.
 - Under the item name: "Gather / buy" on Required items, "N from spare", "Tier not guaranteed"
   (amber), and a recipe dropdown when there are several recipes.
 - Recipe dropdown options read "inputs → amount made · station", e.g.
@@ -100,6 +100,19 @@ Where they differ, this file wins.
 - Remember my inventory: off by default (inventory starts empty each visit). On saves the counts
   on every change; turning it off deletes the saved counts.
 
+### Blocked column
+Agreed 2026-11-12.
+- A free-text note per item, for what's holding a step up. Multi-line: line breaks are kept,
+  and the box grows with its text (Chrome, Edge; elsewhere it can be resized by hand), about
+  180px wide.
+- One note per item key, like Have: it shows on every row of that item, and stays with the item
+  when targets are reordered or recipes change.
+- Item rows only: building/target rows and Fuel rows have no box.
+- Saved in browser storage on every change, until cleared. Clearing the box (or leaving only
+  spaces) deletes the note. Notes for items no longer in the plan are kept and come back with
+  the item. No Remember option, no "clear all", no length limit.
+- Display only: the planner doesn't read it.
+
 ### Saved in browser storage
 | Key | What |
 |---|---|
@@ -110,6 +123,7 @@ Where they differ, this file wins.
 | `gk2calc.buildChoices` | stations chosen with "Build this" |
 | `gk2calc.recipeChoices` | recipe chosen per item |
 | `gk2calc.rememberInventory`, `gk2calc.inventory` | Remember option and the counts |
+| `gk2calc.blocked` | Blocked note per item |
 
 Each store drops unusable saved data, says so in a dismissible warning, and warns when the
 browser blocks storage.
@@ -228,6 +242,9 @@ job doesn't publish anything.
 - New targets go at the top of the list (9cfe9d4).
 - Days tab after Calculator (835f772), with its six rows of fixed text (fc4aa34): display only
   (see Days above).
+
+### Added since (2026-11-12, on the `calculator` branch, not yet merged)
+- Blocked column in Steps: a saved free-text note per item (see Blocked column above).
 
 ### Not built yet (from the spec)
 - **Unlock requirements** (nice-to-have (d)): "needs tech: …", or "unlock: unknown" where the

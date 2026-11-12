@@ -3,6 +3,7 @@ import { gameModel } from '#lib/calc/gameModel';
 import type { ItemNode, PlanNode } from '#lib/calc/planner';
 import { iconUrl } from '#lib/data/icons';
 import type { PerkLevels } from '#lib/perks/levels';
+import { blockedNotes } from './blockedNotes.svelte';
 import { inventory, parseCount } from './inventory.svelte';
 import { recipeChoices } from './recipeChoices.svelte';
 import { recipeLabel } from './recipeLabel';
@@ -45,6 +46,14 @@ const showCount = (count: number | undefined) => (input: HTMLInputElement) => {
 		input.value = count === undefined ? '' : String(count);
 };
 
+/**
+ * Shows the item's Blocked note (it may have been typed on another row of the same item). A field
+ * holding only whitespace is left alone, as the store keeps no note for it.
+ */
+const showNote = (note: string) => (field: HTMLTextAreaElement) => {
+	if (field.value !== note && !(note === '' && field.value.trim() === '')) field.value = note;
+};
+
 const LEAF_NOTES: Record<NonNullable<ItemNode['leafReason']>, string> = {
 	noRecipe: 'Gather / buy',
 	anyOf: 'Gather / buy, any of these',
@@ -71,6 +80,7 @@ const iconFor = (node: PlanNode) =>
 			<th scope="col">Item</th>
 			<th scope="col" class="num">Need</th>
 			<th scope="col">Have</th>
+			<th scope="col">Blocked</th>
 			<th scope="col" class="num">Crafts</th>
 			<th scope="col" class="num">Spare</th>
 			<th scope="col">Station</th>
@@ -162,6 +172,18 @@ const iconFor = (node: PlanNode) =>
 						{:else if row.state === 'short'}
 							<span class="state">Short {node.need - node.fromInventory - node.fromSpare}</span>
 						{/if}
+					{/if}
+				</td>
+				<td class="blocked">
+					{#if node.kind === 'item'}
+						{@const key = node.key}
+						<textarea
+							class="note-field"
+							rows="1"
+							aria-label="Blocked {node.name}"
+							oninput={(e) => blockedNotes.set(key, e.currentTarget.value)}
+							{@attach showNote(blockedNotes.get(key))}
+						></textarea>
 					{/if}
 				</td>
 				<td class="num">{node.kind === 'item' && node.craft ? node.craft.crafts : ''}</td>
@@ -328,6 +350,27 @@ const iconFor = (node: PlanNode) =>
 	.count[aria-invalid='true'],
 	.count[aria-invalid='true']:focus {
 		border-color: var(--color-error);
+	}
+
+	.note-field {
+		display: block;
+		width: 180px;
+		min-height: 24px;
+		/* Grows with its text where supported (Chrome, Edge); elsewhere it can be resized. */
+		field-sizing: content;
+		padding: 1px var(--space-1);
+		background: var(--color-field);
+		border: 1px solid var(--color-line);
+		border-radius: var(--radius);
+		color: var(--color-text);
+		font: inherit;
+		line-height: 20px;
+		resize: vertical;
+	}
+
+	.note-field:focus {
+		outline: none;
+		border-color: var(--color-focus);
 	}
 
 	.state,

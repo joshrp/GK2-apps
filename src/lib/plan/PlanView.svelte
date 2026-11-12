@@ -6,6 +6,7 @@ import { perkLevels } from '#lib/perks/perkLevels.svelte';
 import { buildChoices } from '#lib/stations/buildChoices.svelte';
 import { ownedStations } from '#lib/stations/ownedStations.svelte';
 import { targetQueue } from '#lib/targets/targetQueue.svelte';
+import { blockedNotes } from './blockedNotes.svelte';
 import { inventory } from './inventory.svelte';
 import PlanSummary from './PlanSummary.svelte';
 import PlanTree from './PlanTree.svelte';
@@ -15,6 +16,7 @@ onMount(() => {
 	buildChoices.load();
 	recipeChoices.load();
 	inventory.load();
+	blockedNotes.load();
 });
 
 /** Recomputed whenever targets, perk levels, stations, build or recipe choices change. */
@@ -33,13 +35,15 @@ const result = $derived(
 const warnings = $derived([
 	...buildChoices.warnings,
 	...recipeChoices.warnings,
-	...inventory.warnings
+	...inventory.warnings,
+	...blockedNotes.warnings
 ]);
 
 function dismissWarnings() {
 	buildChoices.dismissWarnings();
 	recipeChoices.dismissWarnings();
 	inventory.dismissWarnings();
+	blockedNotes.dismissWarnings();
 }
 </script>
 

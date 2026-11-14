@@ -23,6 +23,17 @@ function setAll(expanded: boolean) {
 	overrides = new Map(allParentPaths(roots).map((p) => [p, expanded]));
 }
 
+/** Phones only: rows whose details (Have, Blocked, Crafts, Spare, Station) are shown. */
+let detailsOpen: Set<string> = $state(new Set());
+
+function toggleDetails(path: string) {
+	const next = new Set(detailsOpen);
+	if (!next.delete(path)) next.add(path);
+	detailsOpen = next;
+}
+
+const shortBy = (node: ItemNode) => node.need - node.fromInventory - node.fromSpare;
+
 /** Rows whose Have field holds something that isn't a count (not applied). */
 let invalid: Record<string, boolean> = $state({});
 
@@ -84,14 +95,16 @@ const iconFor = (node: PlanNode) =>
 			<th scope="col" class="num">Crafts</th>
 			<th scope="col" class="num">Spare</th>
 			<th scope="col">Station</th>
+			<th scope="col" class="more-cell"><span class="visually-hidden">Details</span></th>
 		</tr>
 	</thead>
 	<tbody>
 		{#each rows as row (row.path)}
 			{@const node = row.node}
 			{@const url = iconFor(node)}
-			<tr class:root={row.depth === 0}>
-				<td class="item" style:padding-left="{row.depth * 20}px">
+			{@const open = detailsOpen.has(row.path)}
+			<tr class:root={row.depth === 0} class:leaf={!row.hasChildren} class:open style:--depth={row.depth}>
+				<td class="item">
 					<span class="item-line">
 						{#if row.hasChildren}
 							<button
@@ -104,7 +117,10 @@ const iconFor = (node: PlanNode) =>
 						{:else}
 							<span class="toggle-space"></span>
 						{/if}
-						{#if node.kind !== 'fuel'}
+						{#if node.kind === 'fuel'}
+							<!-- No icon, but keeps "Fuel" in line with the names around it. -->
+							<span class="icon" aria-hidden="true"></span>
+						{:else}
 							{#if url}
 								<img class="icon" src={url} alt="" width="20" height="20" />
 							{:else}
@@ -123,6 +139,19 @@ const iconFor = (node: PlanNode) =>
 						</span>
 					</span>
 					{#if node.kind === 'item'}
+						<!-- Phones: the row's status at a glance, as Have and Station sit in the details. -->
+						{#if row.state === 'covered' || row.state === 'short' || node.craft?.notBuilt}
+							<span class="glance" aria-hidden="true">
+								{#if row.state === 'covered'}
+									<span class="ok">Covered</span>
+								{:else if row.state === 'short'}
+									<span>Short {shortBy(node)}</span>
+								{/if}
+								{#if node.craft?.notBuilt}
+									<span class="flag">Not built</span>
+								{/if}
+							</span>
+						{/if}
 						{#if node.craft === null && node.leafReason}
 							<span class="note">{LEAF_NOTES[node.leafReason]}</span>
 						{/if}
@@ -147,10 +176,10 @@ const iconFor = (node: PlanNode) =>
 						{/if}
 					{/if}
 				</td>
-				<td class="num">
+				<td class="num need">
 					{#if node.kind === 'fuel'}{node.need} units{:else if node.kind === 'building'}{node.quantity}{:else}{node.need}{/if}
 				</td>
-				<td class="have">
+				<td class="have" data-label="Have">
 					{#if node.kind === 'item'}
 						{@const key = node.key}
 						<input
@@ -170,11 +199,11 @@ const iconFor = (node: PlanNode) =>
 						{:else if row.state === 'covered'}
 							<span class="state ok">Covered</span>
 						{:else if row.state === 'short'}
-							<span class="state">Short {node.need - node.fromInventory - node.fromSpare}</span>
+							<span class="state">Short {shortBy(node)}</span>
 						{/if}
 					{/if}
 				</td>
-				<td class="blocked">
+				<td class="blocked" data-label="Blocked">
 					{#if node.kind === 'item'}
 						{@const key = node.key}
 						<textarea
@@ -186,9 +215,17 @@ const iconFor = (node: PlanNode) =>
 						></textarea>
 					{/if}
 				</td>
-				<td class="num">{node.kind === 'item' && node.craft ? node.craft.crafts : ''}</td>
-				<td class="num">{node.kind === 'item' && node.craft?.spare ? node.craft.spare : ''}</td>
-				<td class="stations">
+				<td class="num crafts" class:blank={!(node.kind === 'item' && node.craft)} data-label="Crafts">
+					{node.kind === 'item' && node.craft ? node.craft.crafts : ''}
+				</td>
+				<td class="num spare" class:blank={!(node.kind === 'item' && node.craft?.spare)} data-label="Spare">
+					{node.kind === 'item' && node.craft?.spare ? node.craft.spare : ''}
+				</td>
+				<td
+					class="stations"
+					class:blank={!(node.kind === 'item' && node.craft)}
+					data-label="Station"
+				>
 					{#if node.kind === 'item' && node.craft}
 						{#if node.craft.stations.length === 0}
 							<span>Station unknown</span>
@@ -205,6 +242,19 @@ const iconFor = (node: PlanNode) =>
 								<span class="flag">Not built</span>
 							{/if}
 						{/if}
+					{/if}
+				</td>
+				<td class="more-cell">
+					{#if node.kind === 'item'}
+						<button
+							class="more"
+							type="button"
+							aria-expanded={open}
+							aria-label="Details for {node.name}"
+							onclick={() => toggleDetails(row.path)}
+						>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+						</button>
 					{/if}
 				</td>
 			</tr>
@@ -258,6 +308,21 @@ const iconFor = (node: PlanNode) =>
 		padding: var(--space-1) var(--space-2);
 		vertical-align: top;
 		border-bottom: 1px solid var(--color-line);
+	}
+
+	.tree {
+		/* Indent per tree level, and the offset of text that lines up with an item's name. */
+		--indent: 20px;
+		--lead: 46px;
+	}
+
+	.item {
+		padding-left: calc(var(--depth) * var(--indent));
+	}
+
+	.more-cell,
+	.glance {
+		display: none;
 	}
 
 	.root td {
@@ -314,7 +379,7 @@ const iconFor = (node: PlanNode) =>
 
 	.note {
 		display: block;
-		margin-left: 46px;
+		margin-left: var(--lead);
 		font-size: var(--font-size-sm);
 	}
 
@@ -386,7 +451,7 @@ const iconFor = (node: PlanNode) =>
 	.recipe {
 		display: block;
 		max-width: 100%;
-		margin: var(--space-1) 0 0 46px;
+		margin: var(--space-1) 0 0 var(--lead);
 		height: 24px;
 		padding: 0 var(--space-1);
 		background: var(--color-field);
@@ -424,5 +489,294 @@ const iconFor = (node: PlanNode) =>
 		border-radius: var(--radius);
 		color: var(--color-warning);
 		font-size: var(--font-size-sm);
+	}
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+	}
+
+	/*
+	 * Phones: each step is a compact row (arrow, icon, name, need, status at a glance) with a
+	 * details button; Have, Blocked, Crafts, Spare, Station and the recipe show underneath when
+	 * it's open. Tap targets are at least 40px.
+	 */
+	@media (max-width: 600px) {
+		.tree-head {
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 0 var(--space-1);
+		}
+
+		.tree-head h3 {
+			margin-right: var(--space-2);
+		}
+
+		.link {
+			min-height: 44px;
+			padding: 0 var(--space-2);
+		}
+
+		.hint {
+			flex-basis: 100%;
+		}
+
+		.tree {
+			--indent: 16px;
+			--lead: 68px;
+			--guide: #5a5346;
+		}
+
+		.tree,
+		.tree tbody {
+			display: block;
+		}
+
+		.tree thead {
+			display: none;
+		}
+
+		.tree tr {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto 44px;
+			align-items: start;
+			border-bottom: 1px solid var(--color-line);
+		}
+
+		.tree tr.root {
+			border-top: 1px solid var(--color-text);
+		}
+
+		/*
+		 * Tree guides: a vertical line under each ancestor's arrow (20px is half the 40px arrow
+		 * button), and an elbow from the parent's line towards this row's arrow.
+		 */
+		.tree tbody tr {
+			position: relative;
+		}
+
+		.tree tbody tr:not(.root)::before,
+		.tree tbody tr:not(.root)::after {
+			content: '';
+			position: absolute;
+			pointer-events: none;
+		}
+
+		.tree tbody tr:not(.root)::before {
+			top: 0;
+			bottom: 0;
+			left: 20px;
+			/* Ends just after the last line, so no partial tile shows past it. */
+			width: calc((var(--depth) - 1) * var(--indent) + 1px);
+			background: repeating-linear-gradient(
+				to right,
+				var(--guide) 0 1px,
+				transparent 1px var(--indent)
+			);
+		}
+
+		.tree tbody tr:not(.root)::after {
+			top: 20px;
+			left: calc((var(--depth) - 1) * var(--indent) + 20px);
+			width: calc(var(--indent) - 6px);
+			height: 1px;
+			background: var(--guide);
+		}
+
+		/* With no arrow on the row, the elbow runs on to just before the icon. */
+		.tree tbody tr.leaf:not(.root)::after {
+			width: calc(var(--indent) + 40px - 4px);
+		}
+
+		/*
+		 * The name line is 28px with 6px above and below; the 40px arrow button reaches into that
+		 * padding, so rows stay compact while the tap area doesn't shrink.
+		 */
+		.tree td.item {
+			padding: 6px 0 6px calc(var(--depth) * var(--indent));
+		}
+
+		.tree td,
+		.root td {
+			padding: 0;
+			border: none;
+		}
+
+		.item {
+			grid-column: 1;
+		}
+
+		.item-line {
+			min-height: 28px;
+		}
+
+		.toggle,
+		.toggle-space {
+			margin: -6px 0;
+		}
+
+		.glance,
+		.note {
+			margin-top: 2px;
+		}
+
+		/* The details cells come later in the row, so pin the visible row to the first line. */
+		.item,
+		.need,
+		.more-cell {
+			grid-row: 1;
+		}
+
+		/* An open row shows the same status in its details. */
+		.open .glance {
+			display: none;
+		}
+
+		.tree td.need {
+			grid-column: 2;
+			padding: 6px var(--space-2) 0 0;
+			line-height: 28px;
+		}
+
+		.toggle,
+		.toggle-space {
+			width: 40px;
+			height: 40px;
+		}
+
+		.name {
+			min-width: 0;
+		}
+
+		.glance {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: var(--space-2);
+			margin-left: var(--lead);
+			font-size: var(--font-size-sm);
+		}
+
+		.glance .flag {
+			margin-top: 0;
+		}
+
+		.more-cell {
+			display: block;
+			grid-column: 3;
+		}
+
+		.more {
+			display: grid;
+			place-items: center;
+			width: 44px;
+			height: 40px;
+			padding: 0;
+			background: none;
+			border: 1px solid transparent;
+			border-radius: var(--radius);
+			color: var(--color-text);
+			cursor: pointer;
+		}
+
+		.more:focus-visible {
+			outline: none;
+			border-color: var(--color-focus);
+		}
+
+		.more svg {
+			width: 20px;
+			height: 20px;
+			fill: none;
+			stroke: currentColor;
+			stroke-width: 2;
+			stroke-linecap: round;
+			stroke-linejoin: round;
+			transition: rotate 0.15s;
+		}
+
+		.more[aria-expanded='true'] svg {
+			rotate: 180deg;
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.more svg {
+				transition: none;
+			}
+		}
+
+		.have,
+		.blocked,
+		.crafts,
+		.spare,
+		.stations,
+		tr:not(.open) .recipe {
+			display: none;
+		}
+
+		.open .have,
+		.open .blocked,
+		.open .crafts:not(.blank),
+		.open .spare:not(.blank),
+		.open .stations:not(.blank) {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: baseline;
+			gap: var(--space-1) var(--space-2);
+			grid-column: 1 / -1;
+			padding: 0 var(--space-2) var(--space-2) calc(var(--depth) * var(--indent) + var(--lead));
+			text-align: left;
+			white-space: normal;
+		}
+
+		.open td[data-label]::before {
+			content: attr(data-label);
+			flex: none;
+			width: 56px;
+			font-size: var(--font-size-sm);
+		}
+
+		.open .have .state,
+		.open .have .note-inline {
+			display: inline;
+		}
+
+		.open .blocked .note-field {
+			flex: 1;
+		}
+
+		.count {
+			width: 88px;
+			height: 40px;
+			font-size: 16px;
+		}
+
+		.note-field {
+			width: auto;
+			min-width: 0;
+			min-height: 40px;
+			padding: var(--space-1) var(--space-2);
+			font-size: 16px;
+			line-height: 24px;
+		}
+
+		.recipe {
+			width: calc(100% - var(--lead));
+			height: 40px;
+			margin-bottom: var(--space-1);
+			font-size: 16px;
+		}
+
+		/* Stations stay one per line, beside the label, with Not built under them. */
+		.station-list {
+			flex-basis: calc(100% - 64px);
+		}
+
+		.stations .flag {
+			margin-left: 64px;
+		}
 	}
 </style>

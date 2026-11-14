@@ -36,7 +36,8 @@ export const STATION_FIXES: Readonly<Record<string, string>> = {
 			'exp_blue_potion_2',
 			'exp_orange_potion_2',
 			'exp_yellow_potion_2',
-			'quest_paint'
+			'quest_paint',
+			'lacquer'
 		].map((id) => [id, 'alchemy_mix'])
 	)
 };
@@ -47,7 +48,9 @@ export const STATION_FIXES: Readonly<Record<string, string>> = {
  */
 export const KNOWN_RECIPE_INPUTS: Readonly<Record<string, [itemId: string, count: number][]>> = {
 	// Export: 1 Melted Fat + 1 Dye.
-	quest_paint: [['water', 2]]
+	quest_paint: [['water', 2]],
+	// Export: 1 Melted Fat + 1 Resin.
+	lacquer: [['flower_night', 1]]
 };
 
 /**

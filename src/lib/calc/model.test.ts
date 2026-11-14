@@ -250,12 +250,19 @@ describe('buildModel (game data)', () => {
 		}
 	});
 
-	it('uses the known ingredients for Paint: 2 Water at Laboratory I', () => {
+	it('uses the known ingredients for Paint and Lacquer, at Laboratory I', () => {
 		expect(m.recipes.get('quest_paint')).toEqual({
 			id: 'quest_paint',
 			name: 'Paint',
 			inputs: [{ id: 'water', refKind: 'item', count: 2 }],
 			outputs: [{ id: 'quest_paint', count: 1 }],
+			stations: ['alchemy_mix']
+		});
+		expect(m.recipes.get('lacquer')).toEqual({
+			id: 'lacquer',
+			name: 'Lacquer',
+			inputs: [{ id: 'flower_night', refKind: 'item', count: 1 }],
+			outputs: [{ id: 'lacquer', count: 1 }],
 			stations: ['alchemy_mix']
 		});
 		for (const [craftId, inputs] of Object.entries(KNOWN_RECIPE_INPUTS)) {
@@ -268,7 +275,7 @@ describe('buildModel (game data)', () => {
 		}
 	});
 
-	it('leaves exactly the agreed 11 crafts with station unknown', () => {
+	it('leaves exactly the agreed 10 crafts with station unknown', () => {
 		const unknown = [...m.recipes.values()].filter((r) => r.stations.length === 0).map((r) => r.id);
 		expect(unknown.sort()).toEqual(
 			[
@@ -276,7 +283,6 @@ describe('buildModel (game data)', () => {
 				'scary_idol',
 				'liquid_harden',
 				'alkali',
-				'lacquer',
 				'organ_improver_red',
 				'organ_improver_white',
 				'quality_items_gold',

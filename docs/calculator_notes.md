@@ -215,8 +215,8 @@ updated export supplies the stations. Anything not fixed shows **"Station unknow
 | Writing Desk (`writing_desk_1`) | all 11 prayers: `prayer_protection`, `prayer_imagination`, `prayer_insanity`, `prayer_prosperity`, `prayer_purity`, `prayer_consumption`, `prayer_demand`, `prayer_speed`, `prayer_obedience`, `prayer_repentance`, `prayer_music` |
 | Printing Press (`newspaper_press`) | `book`, `book_hard`, `newspaper` |
 | Potter's Wheel (`potter_wheel_1`) | `ceramic_fired_1`, `ceramic_fired_2` |
-| Laboratory I (`alchemy_mix`) | `heal_potion`, `heal_potion_2`, `energy_potion`, `energy_potion_2`, `energy_potion_3`, `exp_red_potion_2`, `exp_green_potion_2`, `exp_blue_potion_2`, `exp_orange_potion_2`, `exp_yellow_potion_2`, `quest_paint` (Paint, added 2026-11-14) |
-| Station unknown | `sinful_idol`, `scary_idol`, `liquid_harden`, `alkali`, `lacquer`, `organ_improver_red`, `organ_improver_white`, `quality_items_gold`, `resurrection_liquid`, `quality_food_gold`, `miracle_growing_elixir` |
+| Laboratory I (`alchemy_mix`) | `heal_potion`, `heal_potion_2`, `energy_potion`, `energy_potion_2`, `energy_potion_3`, `exp_red_potion_2`, `exp_green_potion_2`, `exp_blue_potion_2`, `exp_orange_potion_2`, `exp_yellow_potion_2`, `quest_paint` (Paint) and `lacquer` (Lacquer), both added 2026-11-14 |
+| Station unknown | `sinful_idol`, `scary_idol`, `liquid_harden`, `alkali`, `organ_improver_red`, `organ_improver_white`, `quality_items_gold`, `resurrection_liquid`, `quality_food_gold`, `miracle_growing_elixir` |
 
 The gap should also be reported for the data export.
 
@@ -227,6 +227,7 @@ used instead of the export's (outputs unchanged):
 | Craft | Export | Game |
 |---|---|---|
 | Paint (`quest_paint`, agreed 2026-11-14) | 1 Melted Fat + 1 Dye | 2 Water → 1 Paint, at Laboratory I |
+| Lacquer (`lacquer`, agreed 2026-11-14) | 1 Melted Fat + 1 Resin | 1 Night flower → 1 Lacquer, at Laboratory I |
 
 ## Ingredients and quality
 
@@ -261,6 +262,8 @@ Pages isn't enabled yet, so the deploy job doesn't publish anything.
   2026-11-14.
 - Days: the Gluttony note gained a second paragraph about the PR machine (newspapers and charged
   hypno devices raise the week's zombie limit). Merged into `main` and pushed 2026-11-14.
+- Lacquer fixed to 1 Night flower → 1 Lacquer at Laboratory I (see Recipe fixes above).
+  Merged into `main` and pushed 2026-11-14.
 
 ### Not built yet (from the spec)
 - **Unlock requirements** (nice-to-have (d)): "needs tech: …", or "unlock: unknown" where the
@@ -271,8 +274,9 @@ Pages isn't enabled yet, so the deploy job doesn't publish anything.
   by station (see Scope).
 
 ### Still open
-- Data export gaps to report: the 38 crafts with no station (fixed in the app for 27), the 6
-  station costs and the 6 station locations supplied by hand, and Paint's wrong ingredients
+- Data export gaps to report: the 38 crafts with no station (fixed in the app for 28), the 6
+  station costs and the 6 station locations supplied by hand, and the wrong ingredients for
+  Paint and Lacquer
   (`src/lib/calc/stationFixes.ts`).
 - Layout is desktop only; styling to be revisited after use.
 - Searching "Chest" lists two buildings both named "Chest". Not looked into yet: check whether

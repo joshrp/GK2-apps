@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { gk2Data } from '#lib/data/gk2';
 import { action, buildable, craft, data, item, output } from './fixtures';
 import { buildModel, isUsableCraft } from './model';
-import { STATION_FIXES } from './stationFixes';
+import { KNOWN_RECIPE_INPUTS, STATION_FIXES } from './stationFixes';
 
 describe('isUsableCraft', () => {
 	it('excludes dev, conveyor and zombie crafts, and crafts with no guaranteed output', () => {
@@ -250,7 +250,25 @@ describe('buildModel (game data)', () => {
 		}
 	});
 
-	it('leaves exactly the agreed 12 crafts with station unknown', () => {
+	it('uses the known ingredients for Paint: 2 Water at Laboratory I', () => {
+		expect(m.recipes.get('quest_paint')).toEqual({
+			id: 'quest_paint',
+			name: 'Paint',
+			inputs: [{ id: 'water', refKind: 'item', count: 2 }],
+			outputs: [{ id: 'quest_paint', count: 1 }],
+			stations: ['alchemy_mix']
+		});
+		for (const [craftId, inputs] of Object.entries(KNOWN_RECIPE_INPUTS)) {
+			for (const [itemId] of inputs) {
+				expect(
+					gk2Data.items.some((i) => i.id === itemId),
+					`${craftId}: ${itemId}`
+				).toBe(true);
+			}
+		}
+	});
+
+	it('leaves exactly the agreed 11 crafts with station unknown', () => {
 		const unknown = [...m.recipes.values()].filter((r) => r.stations.length === 0).map((r) => r.id);
 		expect(unknown.sort()).toEqual(
 			[
@@ -259,7 +277,6 @@ describe('buildModel (game data)', () => {
 				'liquid_harden',
 				'alkali',
 				'lacquer',
-				'quest_paint',
 				'organ_improver_red',
 				'organ_improver_white',
 				'quality_items_gold',

@@ -2,6 +2,7 @@ import type { Craft, Gk2Data, ItemStack, Quantity, RefKind } from '#lib/data/gk2
 import {
 	COMES_WITH_GAME,
 	KNOWN_LOCATIONS,
+	KNOWN_RECIPE_INPUTS,
 	KNOWN_STATION_COSTS,
 	STATION_FIXES,
 	STORAGE_ONLY
@@ -142,6 +143,7 @@ export function buildModel(data: Gk2Data): Model {
 	for (const craft of data.crafts) {
 		if (!isUsableCraft(craft)) continue;
 		const fix = STATION_FIXES[craft.id];
+		const knownInputs = KNOWN_RECIPE_INPUTS[craft.id];
 		const outputs = craft.outputs
 			.filter((o) => o.chance === null)
 			.flatMap((o) => {
@@ -151,7 +153,9 @@ export function buildModel(data: Gk2Data): Model {
 		recipes.set(craft.id, {
 			id: craft.id,
 			name: craft.name ?? data.names[craft.id] ?? craft.id,
-			inputs: craft.inputs.map(toLine),
+			inputs: knownInputs
+				? knownInputs.map(([id, count]): Line => ({ id, refKind: 'item', count }))
+				: craft.inputs.map(toLine),
 			outputs,
 			stations: craft.stations.length > 0 ? craft.stations : fix ? [fix] : []
 		});

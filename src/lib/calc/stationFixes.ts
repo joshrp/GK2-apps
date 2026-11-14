@@ -35,9 +35,19 @@ export const STATION_FIXES: Readonly<Record<string, string>> = {
 			'exp_green_potion_2',
 			'exp_blue_potion_2',
 			'exp_orange_potion_2',
-			'exp_yellow_potion_2'
+			'exp_yellow_potion_2',
+			'quest_paint'
 		].map((id) => [id, 'alchemy_mix'])
 	)
+};
+
+/**
+ * Ingredients from the game where the export's are wrong (agreed 2026-11-14). Used instead of the
+ * export's inputs. Outputs are unchanged.
+ */
+export const KNOWN_RECIPE_INPUTS: Readonly<Record<string, [itemId: string, count: number][]>> = {
+	// Export: 1 Melted Fat + 1 Dye.
+	quest_paint: [['water', 2]]
 };
 
 /**

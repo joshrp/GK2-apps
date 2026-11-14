@@ -215,10 +215,18 @@ updated export supplies the stations. Anything not fixed shows **"Station unknow
 | Writing Desk (`writing_desk_1`) | all 11 prayers: `prayer_protection`, `prayer_imagination`, `prayer_insanity`, `prayer_prosperity`, `prayer_purity`, `prayer_consumption`, `prayer_demand`, `prayer_speed`, `prayer_obedience`, `prayer_repentance`, `prayer_music` |
 | Printing Press (`newspaper_press`) | `book`, `book_hard`, `newspaper` |
 | Potter's Wheel (`potter_wheel_1`) | `ceramic_fired_1`, `ceramic_fired_2` |
-| Laboratory I (`alchemy_mix`) | `heal_potion`, `heal_potion_2`, `energy_potion`, `energy_potion_2`, `energy_potion_3`, `exp_red_potion_2`, `exp_green_potion_2`, `exp_blue_potion_2`, `exp_orange_potion_2`, `exp_yellow_potion_2` |
-| Station unknown | `sinful_idol`, `scary_idol`, `liquid_harden`, `alkali`, `lacquer`, `quest_paint`, `organ_improver_red`, `organ_improver_white`, `quality_items_gold`, `resurrection_liquid`, `quality_food_gold`, `miracle_growing_elixir` |
+| Laboratory I (`alchemy_mix`) | `heal_potion`, `heal_potion_2`, `energy_potion`, `energy_potion_2`, `energy_potion_3`, `exp_red_potion_2`, `exp_green_potion_2`, `exp_blue_potion_2`, `exp_orange_potion_2`, `exp_yellow_potion_2`, `quest_paint` (Paint, added 2026-11-14) |
+| Station unknown | `sinful_idol`, `scary_idol`, `liquid_harden`, `alkali`, `lacquer`, `organ_improver_red`, `organ_improver_white`, `quality_items_gold`, `resurrection_liquid`, `quality_food_gold`, `miracle_growing_elixir` |
 
 The gap should also be reported for the data export.
+
+### Recipe fixes (wrong in the export)
+Ingredients from the game, kept in `KNOWN_RECIPE_INPUTS` in `src/lib/calc/stationFixes.ts` and
+used instead of the export's (outputs unchanged):
+
+| Craft | Export | Game |
+|---|---|---|
+| Paint (`quest_paint`, agreed 2026-11-14) | 1 Melted Fat + 1 Dye | 2 Water → 1 Paint, at Laboratory I |
 
 ## Ingredients and quality
 
@@ -229,12 +237,12 @@ The gap should also be reported for the data export.
 - **"Any of" groups that aren't quality tiers** (skin, skulls, bones, heart, brain, guts) are one
   gather line, e.g. "Skin (any) × N", with one inventory count.
 
-## Status (2026-11-07)
+## Status (2026-11-14)
 
 Steps 1–10 below are built (82b4adc, f889711, 28caa0a, 27fe81f, plus these notes). The
-`calculator` branch, with everything under "Added since", was pushed and merged into `main`
-(fast-forward) and `main` pushed on 2026-11-07. GitHub Pages isn't enabled yet, so the deploy
-job doesn't publish anything.
+`calculator` branch was pushed and merged into `main` (fast-forward) on 2026-11-07 and again on
+2026-11-12; everything under "Added since" is in `main` except where marked otherwise. GitHub
+Pages isn't enabled yet, so the deploy job doesn't publish anything.
 
 ### Added since (2026-11-07)
 - Target order (d1645e7): ↑/↓ buttons, saved order, focus kept at the ends; steps say "N used
@@ -243,8 +251,14 @@ job doesn't publish anything.
 - Days tab after Calculator (835f772), with its six rows of fixed text (fc4aa34): display only
   (see Days above).
 
-### Added since (2026-11-12, on the `calculator` branch, not yet merged)
-- Blocked column in Steps: a saved free-text note per item (see Blocked column above).
+### Added since (2026-11-12)
+- Blocked column in Steps (f8b59a2): a saved free-text note per item (see Blocked column above).
+  Merged into `main` and pushed 2026-11-12.
+
+### Added since (2026-11-14)
+- Paint fixed to 2 Water → 1 Paint at Laboratory I, with a new list of recipe fixes for
+  ingredients the export gets wrong (see Recipe fixes above). Committed on `calculator`; not yet
+  pushed or merged into `main`.
 
 ### Not built yet (from the spec)
 - **Unlock requirements** (nice-to-have (d)): "needs tech: …", or "unlock: unknown" where the
@@ -255,8 +269,9 @@ job doesn't publish anything.
   by station (see Scope).
 
 ### Still open
-- Data export gaps to report: the 38 crafts with no station (fixed in the app for 26), the 6
-  station costs and the 6 station locations supplied by hand (`src/lib/calc/stationFixes.ts`).
+- Data export gaps to report: the 38 crafts with no station (fixed in the app for 27), the 6
+  station costs and the 6 station locations supplied by hand, and Paint's wrong ingredients
+  (`src/lib/calc/stationFixes.ts`).
 - Layout is desktop only; styling to be revisited after use.
 - Searching "Chest" lists two buildings both named "Chest". Not looked into yet: check whether
   they're different buildings or a duplicate the `X`/`X_place` merge missed.

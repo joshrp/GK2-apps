@@ -70,7 +70,7 @@ const focusIfReturning = (el: HTMLElement) => {
 			<th scope="col">Station</th>
 			<th scope="col">Location</th>
 			<th scope="col">I have this</th>
-			<th scope="col">Build cost</th>
+			<th scope="col" class="cost-cell">Build cost</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -109,7 +109,7 @@ const focusIfReturning = (el: HTMLElement) => {
 						onchange={(e) => ownedStations.setOwned(station.id, e.currentTarget.checked)}
 					/>
 				</td>
-				<td>
+				<td class="cost-cell">
 					{#if station.cost.kind === 'comesWithGame'}
 						Comes with the game
 					{:else if station.cost.kind === 'unknown'}
@@ -295,6 +295,51 @@ const focusIfReturning = (el: HTMLElement) => {
 	.have input:focus-visible {
 		outline: 2px solid var(--color-focus);
 		outline-offset: 2px;
+	}
+
+	/*
+	 * Phones: each station is one grid row (icon, name, location, tick box) with its build cost
+	 * on a second line underneath, so the cost isn't squeezed into a narrow fourth column.
+	 */
+	@media (max-width: 600px) {
+		.stations,
+		.stations thead,
+		.stations tbody {
+			display: block;
+		}
+
+		.stations tr {
+			display: grid;
+			grid-template-columns: 40px 1fr auto 64px;
+			column-gap: var(--space-3);
+			align-items: center;
+			padding: var(--space-1) 0;
+			border-bottom: 1px solid var(--color-line);
+		}
+
+		.stations th,
+		.stations td {
+			padding: 0;
+			border-bottom: none;
+		}
+
+		.stations th.cost-cell {
+			display: none;
+		}
+
+		.stations td.cost-cell {
+			grid-column: 2 / -1;
+			padding-top: var(--space-1);
+			font-size: var(--font-size-sm);
+		}
+
+		.cost-cell .cost li {
+			display: inline;
+		}
+
+		.cost-cell .cost li:not(:last-child)::after {
+			content: ', ';
+		}
 	}
 
 	.visually-hidden {

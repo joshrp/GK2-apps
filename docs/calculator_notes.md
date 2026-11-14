@@ -240,8 +240,8 @@ used instead of the export's (outputs unchanged):
 ## Status (2026-11-14)
 
 Steps 1–10 below are built (82b4adc, f889711, 28caa0a, 27fe81f, plus these notes). The
-`calculator` branch was pushed and merged into `main` (fast-forward) on 2026-11-07 and again on
-2026-11-12; everything under "Added since" is in `main` except where marked otherwise. GitHub
+`calculator` branch was pushed and merged into `main` (fast-forward) on 2026-11-07, 2026-11-12
+and 2026-11-14; everything under "Added since" is in `main`. GitHub
 Pages isn't enabled yet, so the deploy job doesn't publish anything.
 
 ### Added since (2026-11-07)
@@ -256,9 +256,9 @@ Pages isn't enabled yet, so the deploy job doesn't publish anything.
   Merged into `main` and pushed 2026-11-12.
 
 ### Added since (2026-11-14)
-- Paint fixed to 2 Water → 1 Paint at Laboratory I, with a new list of recipe fixes for
-  ingredients the export gets wrong (see Recipe fixes above). Committed on `calculator`; not yet
-  pushed or merged into `main`.
+- Paint fixed to 2 Water → 1 Paint at Laboratory I (16bd176), with a new list of recipe fixes
+  for ingredients the export gets wrong (see Recipe fixes above). Merged into `main` and pushed
+  2026-11-14.
 
 ### Not built yet (from the spec)
 - **Unlock requirements** (nice-to-have (d)): "needs tech: …", or "unlock: unknown" where the

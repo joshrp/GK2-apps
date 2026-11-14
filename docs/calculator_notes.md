@@ -259,6 +259,8 @@ Pages isn't enabled yet, so the deploy job doesn't publish anything.
 - Paint fixed to 2 Water → 1 Paint at Laboratory I (16bd176), with a new list of recipe fixes
   for ingredients the export gets wrong (see Recipe fixes above). Merged into `main` and pushed
   2026-11-14.
+- Days: the Gluttony note gained a second paragraph about the PR machine (newspapers and charged
+  hypno devices raise the week's zombie limit). Merged into `main` and pushed 2026-11-14.
 
 ### Not built yet (from the spec)
 - **Unlock requirements** (nice-to-have (d)): "needs tech: …", or "unlock: unknown" where the

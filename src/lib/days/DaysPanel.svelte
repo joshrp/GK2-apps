@@ -15,7 +15,8 @@ const rows: DayRow[] = [
 		colour: 'Brown',
 		icon: 'Antler',
 		location: 'Astrologer',
-		notes: 'Focus on increasing the number of zombies you can resurrect.',
+		notes:
+			'Focus on increasing the number of zombies you can resurrect.\n\nPlace newspapers and charged hypno devices on the PR machine every week to increase the zombie limit for the week.',
 		day: 'Gluttony'
 	},
 	{
